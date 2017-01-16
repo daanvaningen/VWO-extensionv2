@@ -33,8 +33,9 @@
   }
 
   // If VWO is on site
-  function initVWO(VWOData){
+  function initVWO(data){
     app.querySelector('.loading').remove();
+    const VWOData = JSON.parse(data);
 
     const accID = VWOData.accID;
     const userID = VWOData.userID;

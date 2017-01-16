@@ -3,7 +3,7 @@ const data = {};
 
 // Custom event for content script
 const customVWOEvent = document.createEvent('CustomEvent');
-      customVWOEvent.initCustomEvent('VWOData', true, true, data);
+      customVWOEvent.initCustomEvent('VWOData', true, true, JSON.stringify(data));
 
 // Determines VWO on page and fills data object
 function getVWOData() {
