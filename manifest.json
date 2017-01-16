@@ -4,7 +4,7 @@
   "name": "VWO extension",
   "version": "0.1.0",
     "description": "A Visual Web Optimizer extension to see active experiments, change the variation you are in and quickly hop in the VWO Editor to make changes to experiments.",
-  "author": "Richard Bieringa",
+  "author": "Richard Bieringa & Daan van Ingen",
 
   "icons": { "16": "./img/vwo.png",
            "48": "./img/vwo.png",
@@ -23,7 +23,8 @@
     "activeTab",
     "cookies",
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "storage"
   ],
   "web_accessible_resources" : ["/js/dom-script.js"]
 }
