@@ -1,5 +1,3 @@
-alert('content script');
-
 // Create script in DOM to collect VWO data
 const scriptEl = document.createElement('script');
       scriptEl.type = 'text/javascript';
@@ -15,9 +13,10 @@ requestVWOData();
 document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
   const VWOData = e.detail;
+  console.log(VWOData);
 
   // Send to Chrome Extension
-  chrome.runtime.sendMessage(VWOData);
+  chrome.runtime.sendMessage(JSON.stringify(VWOData));
 
   // Remove script element from page
   scriptEl.remove();

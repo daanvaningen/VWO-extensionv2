@@ -1,4 +1,4 @@
-(function(d, w){
+((d, w) => {
   const app = d.getElementById('app');
   
   // ASDASDASDASD
