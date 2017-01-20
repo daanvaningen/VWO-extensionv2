@@ -1,4 +1,4 @@
-alert('content script');
+// alert('content script');
 
 // Create script in DOM to collect VWO data
 const scriptEl = document.createElement('script');
@@ -22,5 +22,3 @@ document.addEventListener('VWOData', function (e){
   // Remove script element from page
   scriptEl.remove();
 });
-
-

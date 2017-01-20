@@ -1,6 +1,6 @@
 (function(d, w){
   const app = d.getElementById('app');
-  
+
   // ASDASDASDASD
   // on click reset het elke keer
   // store data ?
