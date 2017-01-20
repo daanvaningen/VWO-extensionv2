@@ -1,5 +1,4 @@
 {
-  // Required
   "manifest_version": 2,
   "name": "VWO extension",
   "version": "0.1.0",
@@ -21,19 +20,20 @@
         },
   "permissions": [
     "activeTab",
-    "cookies",
+    "tabs",
     "http://*/*",
-    "https://*/*",
-    "storage"
+    "https://*/*"
   ],
   "web_accessible_resources" : ["/js/dom-script.js"],
 
-  "content_scripts":[
+  "content_scripts": [
     {
-      "matches": [
-          "<all_urls>"
-      ],
-      "js":["./js/content-script.js"]
+      "matches": ["<all_urls>"],
+      "js": ["./js/content-script.js"]
     }
-  ]
+  ],
+    "background": {
+    "scripts": ["./js/app.js"],
+    "persistent": false
+  }
 }

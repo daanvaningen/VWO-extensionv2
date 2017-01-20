@@ -1,23 +1,27 @@
-// VWO data object
-const data = {};
+(() => {
+  // VWO data object
+  const VWOData = {};
 
-// Custom event for content script
-const customVWOEvent = document.createEvent('CustomEvent');
-      customVWOEvent.initCustomEvent('VWOData', true, true, data);
-
-// Determines VWO on page and fills data object
-function getVWOData() {
-  if (window._vwo_acc_id) {
-    data.valid = 1;
-    data.accID = window._vwo_acc_id;
-    data.userID = window._vwo_uuid;
-    data.experiments = window._vwo_exp;
-  } else {
-    data.valid = 0;
+  // Determines VWO on page and fills data object
+  const getVWOData = () => {
+    if (window._vwo_acc_id) {
+      VWOData.valid = 1;
+      VWOData.accID = window._vwo_acc_id;
+      VWOData.userID = window._vwo_uuid;
+      VWOData.experiments = window._vwo_exp;
+    } else {
+      VWOData.valid = 0;
+    }
+    console.log(VWOData);
+    return VWOData
   }
-}
 
-getVWOData();
+  // Custom event for content script
+  const customVWOEvent = document.createEvent('CustomEvent');
+        customVWOEvent.initCustomEvent('VWOData', true, true, getVWOData());
 
-// Dispatch event
-document.dispatchEvent(customVWOEvent);
+  // Dispatch event
+  document.dispatchEvent(customVWOEvent);
+})();
+
+
