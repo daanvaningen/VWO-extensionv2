@@ -12,9 +12,14 @@
     } else {
       VWOData.valid = 0;
     }
-    console.log(VWOData);
     return VWOData
   }
+
+  // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  //   chrome.tabs.sendMessage(tabs.id[0], {greeting: "hello"}, function(response) {
+  //     console.log('heee');
+  //   });
+  // });
 
   // Custom event for content script
   const customVWOEvent = document.createEvent('CustomEvent');
@@ -23,5 +28,3 @@
   // Dispatch event
   document.dispatchEvent(customVWOEvent);
 })();
-
-

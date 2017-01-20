@@ -17,10 +17,10 @@
     // Validity checks if VWO is on page
     if (request.valid === 0) {
       notAvailable();
-      console.log('not available');
+      console.log('VWO not available');
     } else if (request.valid === 1){
       initVWO(request);
-      console.log('not available');
+      console.log('VWO available');
     }
   });
 
@@ -53,10 +53,4 @@
     app.appendChild(userElement);
     app.appendChild(experimentsElement);
   }
-
-
-  chrome.browserAction.onClicked.addListener(function(activeTab) {
-    alert('clicked');
-    chrome.tabs.executeScript(null, {file:  './js/content-script.js'});
-  });
 })(document, window);
