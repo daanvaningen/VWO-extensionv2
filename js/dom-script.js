@@ -5,21 +5,17 @@
   // Determines VWO on page and fills data object
   const getVWOData = () => {
     if (window._vwo_acc_id) {
+      console.log('dom script vwo defined')
       VWOData.valid = 1;
       VWOData.accID = window._vwo_acc_id;
       VWOData.userID = window._vwo_uuid;
       VWOData.experiments = window._vwo_exp;
     } else {
+      console.log('dom-script vwo not defined')
       VWOData.valid = 0;
     }
     return VWOData
   }
-
-  // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  //   chrome.tabs.sendMessage(tabs.id[0], {greeting: "hello"}, function(response) {
-  //     console.log('heee');
-  //   });
-  // });
 
   // Custom event for content script
   const customVWOEvent = document.createEvent('CustomEvent');

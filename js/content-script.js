@@ -4,6 +4,8 @@ const scriptEl = document.createElement('script');
       scriptEl.src = chrome.extension.getURL('/js/dom-script.js');
 
 
+console.log(window.location.href)
+console.log("content-script " + window._vwo_acc_id);
 
 function requestVWOData() {
   let body = document.getElementsByTagName('body')[0];
@@ -15,8 +17,7 @@ document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
   const VWOData = e.detail;
   // Send to Chrome Extension
-  console.log(JSON.stringify(VWOData));
-  chrome.runtime.sendMessage(JSON.stringify(VWOData));
+  chrome.runtime.sendMessage(VWOData);
 
   // Remove script element from page
   scriptEl.remove();
