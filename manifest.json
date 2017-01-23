@@ -34,7 +34,7 @@
     }
   ],
     "background": {
-    "scripts": ["jquery-1.7.1.min.js","./js/app.js", "./js/dom-script.js"],
+    "scripts": ["jquery-1.7.1.min.js", "./js/app.js"],
     "persistent": false
   }
 }

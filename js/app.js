@@ -7,7 +7,6 @@
   // http://stackoverflow.com/questions/5364062/how-can-i-save-information-locally-in-my-chrome-extension
   // hier iets mee of localstorage of andere aanpak idk
 
-
   // Eventlistener for content script
   chrome.runtime.onMessage.addListener(
     function(request) {
