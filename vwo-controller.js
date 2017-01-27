@@ -1,3 +1,4 @@
+/*
 (function(){
   var cv_vwo = this;
 
@@ -74,3 +75,45 @@
   this.init();
 
 })();
+*/
+
+function notAvailable() {
+    app.querySelector('.loading').remove();
+    const notFound = document.createElement('div');
+          notFound.innerHTML = 'VWO not found on this page';
+    app.appendChild(notFound);
+}
+
+function initVWO(data){
+    const app = document.getElementById('app');
+    if (data.valid === 0) {
+      console.log('VWO not available');
+      notAvailable();
+    }
+    else {
+        app.querySelector('.loading').remove();
+        const VWOData = data;
+
+        const accID = VWOData.accID;
+        const userID = VWOData.userID;
+        const experiments = VWOData.experiments;
+
+        const accElement = document.createElement('div');
+              accElement.innerHTML = accID;
+
+        const userElement = document.createElement('div');
+              userElement.innerHTML = userID;
+
+        const experimentsElement = document.createElement('div');
+
+        app.appendChild(accElement);
+        app.appendChild(userElement);
+        app.appendChild(experimentsElement);
+    }
+}
+
+window.addEventListener('load', function(evt) {
+    chrome.runtime.getBackgroundPage(function(eventPage){
+        eventPage.queryContentScript(initVWO);
+    })
+});

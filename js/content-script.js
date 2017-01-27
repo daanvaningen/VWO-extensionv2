@@ -3,13 +3,12 @@ const scriptEl = document.createElement('script');
       scriptEl.type = 'text/javascript';
       scriptEl.src = chrome.extension.getURL('/js/dom-script.js');
 
-
-console.log(window.location.href)
-console.log("content-script " + window._vwo_acc_id);
+// console.log(window);
+// console.log("content-script " + window._vwo_acc_id);
 
 function requestVWOData() {
   let body = document.getElementsByTagName('body')[0];
-  $('body').append(scriptEl);
+  body.append(scriptEl);
 }
 requestVWOData();
 
@@ -17,8 +16,16 @@ document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
   const VWOData = e.detail;
   // Send to Chrome Extension
-  chrome.runtime.sendMessage(VWOData);
+  // console.log("content-script")
+  // console.log(VWOData);
+  // chrome.runtime.sendMessage(VWOData);
 
+    chrome.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+        if (request.message == "VWOData"){
+          sendResponse(VWOData);
+        }
+      });
   // Remove script element from page
   scriptEl.remove();
 });

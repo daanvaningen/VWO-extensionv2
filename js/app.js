@@ -1,6 +1,13 @@
+/*
 ((d, w) => {
   const app = d.getElementById('app');
-
+  function queryContentScript(callback){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "VWOData"}, function(data) {
+          callback(data);
+      });
+    });
+  }
   // ASDASDASDASD
   // on click reset het elke keer
   // store data ?
@@ -9,7 +16,7 @@
 
   // Eventlistener for content script
   chrome.runtime.onMessage.addListener(
-    function(request) {
+    function(request, sender, sendResponse) {
     console.log(request);
     console.log(request.valid);
 
@@ -53,3 +60,26 @@
     app.appendChild(experimentsElement);
   }
 })(document, window);
+
+
+chrome.browserAction.onClicked.addListener(function (tab) { //Fired when User Clicks ICON
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "VWOData"}, function(response) {
+            // Validity checks if VWO is on page
+            chrome.tabs.create({url: "main.html"});
+            if (response.valid === 0) {
+              notAvailable();
+          } else if (response.valid === 1){
+              initVWO(request);
+            }
+      });
+    });
+}); */
+
+function queryContentScript(callback){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "VWOData"}, function(data) {
+          callback(data);
+      });
+    });
+}

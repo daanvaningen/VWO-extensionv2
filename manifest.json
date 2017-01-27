@@ -25,17 +25,16 @@
     "https://*/*",
     "storage"
   ],
-  "web_accessible_resources" : ["jquery-1.7.1.js","/js/dom-script.js"],
+  "web_accessible_resources" : ["/js/dom-script.js"],
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["jquery-1.7.1.min.js","./js/content-script.js"],
+      "js": ["./js/content-script.js"],
       "permissions":"activeTab"
     }
   ],
     "background": {
-    "scripts": ["jquery-1.7.1.min.js", "./js/app.js"],
-    "persistent": false
+    "scripts": ["./js/app.js"]
   }
 }
