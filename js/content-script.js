@@ -3,33 +3,37 @@ const scriptEl = document.createElement('script');
       scriptEl.type = 'text/javascript';
       scriptEl.src = chrome.extension.getURL('/js/dom-script.js');
 
-// console.log(window);
-// console.log("content-script " + window._vwo_acc_id);
-
+let VWOData;
 function requestVWOData() {
   let body = document.getElementsByTagName('body')[0];
   body.append(scriptEl);
+  return true;
 }
-requestVWOData();
 
+let VWOData;
 document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
-  const VWOData = e.detail;
-  // Send to Chrome Extension
-  // console.log("content-script")
-  // console.log(VWOData);
-  // chrome.runtime.sendMessage(VWOData);
-
-    chrome.runtime.onMessage.addListener(
-      function(request, sender, sendResponse) {
-        if (request.message == "VWOData"){
-          sendResponse(VWOData);
-        }
-      });
-  // Remove script element from page
+  VWOData = e.detail;
+ // Remove script element from page
   scriptEl.remove();
 });
 
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.message == "VWOData"){
+
+        let VWOPromise = new Promise(
+            function (resolve, reject) {
+                if(requestVWOData()){
+                    resolve(VWOData);
+                }
+            }
+        );
+
+        VWOPromise
+            .then(sendResponse(VWOData))
+    }
+  });
 // chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 //   console.log('eeeeyeyeyeye');
 //   if (msg.greeting == 'hello') {

@@ -76,6 +76,15 @@
 
 })();
 */
+function addExperimentsInfo(experiments){
+    console.log(experiments)
+    const expdiv = document.getElementsByClassName('experiments')
+    Object.keys(experiments).forEach(function(key) {
+        var temp = document.createElement('div');
+        temp.innerHTML = experiments[key].name;
+        expdiv.appendChild(temp);
+    });
+}
 
 function notAvailable() {
     app.querySelector('.loading').remove();
@@ -86,10 +95,8 @@ function notAvailable() {
 
 function initVWO(data){
     const app = document.getElementById('app');
-    if (data.valid === 0) {
-      console.log('VWO not available');
+    if (data.valid === 0)
       notAvailable();
-    }
     else {
         app.querySelector('.loading').remove();
         const VWOData = data;
@@ -97,18 +104,22 @@ function initVWO(data){
         const accID = VWOData.accID;
         const userID = VWOData.userID;
         const experiments = VWOData.experiments;
-
         const accElement = document.createElement('div');
-              accElement.innerHTML = accID;
+              accElement.innerHTML = 'Account ID: ' + accID;
+        accElement.className = 'accountID';
 
         const userElement = document.createElement('div');
-              userElement.innerHTML = userID;
+              userElement.innerHTML = 'User ID: ' + userID;
+        userElement.className = 'userID';
 
         const experimentsElement = document.createElement('div');
+        experimentsElement.className = 'experiments'
 
         app.appendChild(accElement);
         app.appendChild(userElement);
         app.appendChild(experimentsElement);
+
+        addExperimentsInfo(experiments);
     }
 }
 

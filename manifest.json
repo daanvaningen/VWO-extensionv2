@@ -35,6 +35,7 @@
     }
   ],
     "background": {
-    "scripts": ["./js/app.js"]
+    "scripts": ["./js/app.js"],
+    "persistent":false
   }
 }
