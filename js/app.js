@@ -75,6 +75,19 @@ chrome.browserAction.onClicked.addListener(function (tab) { //Fired when User Cl
       });
     });
 }); */
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+      console.log('received');
+    if (request.message == "count_experiments")
+      console.log(request.count);
+  });
+
+
+function reloadPage(){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {message: "Reload"})
+    });
+}
 
 function queryContentScript(callback){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {

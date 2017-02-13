@@ -9,6 +9,8 @@
       VWOData.accID = window._vwo_acc_id;
       VWOData.userID = window._vwo_uuid;
       VWOData.experiments = window._vwo_exp;
+      VWOData.campaignData = window._vwo_campaignData;
+      VWOData.curhref = window.location.href;
     } else {
       VWOData.valid = 0;
     }
