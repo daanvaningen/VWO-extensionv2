@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "VWO extension",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "A Visual Web Optimizer extension to see active experiments and change variations",
   "author": "Richard Bieringa & Daan van Ingen",
 

@@ -7,6 +7,10 @@
   border-left: 5px solid #009fe3
 }
 
+.experiments  {
+  overflow-y: scroll; height:350px;
+}
+
 .experiments > div[class^='exp'] {
   padding: 10px;
   margin-bottom: 10px;
