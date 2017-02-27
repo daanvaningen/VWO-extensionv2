@@ -163,7 +163,7 @@ function add_experiments(experiments, campaignData){
         expdiv.appendChild(noExp);
     }
 
-    chrome.browserAction.setBadgeText({text:''+i+''})
+    // chrome.browserAction.setBadgeText({text:''+i+''})
 }
 
 
@@ -174,12 +174,43 @@ function notAvailable() {
     app.appendChild(notFound);
 }
 
+function noExperimentsData() {
+    app.querySelector('.loading').remove();
+    const mainInfo = document.createElement('div');
+    mainInfo.className = 'mainInformation';
+    app.appendChild(mainInfo);
+
+    const mainInfoDiv = document.getElementsByClassName('mainInformation')[0];
+
+    const header = document.createElement('div');
+        header.innerHTML = '<h1> VWO is running on this page </h1>';
+    header.className = 'header';
+    const accElement = document.createElement('div');
+          accElement.innerHTML = '<h3> No account data found </h3>';
+    accElement.className = 'accountID';
+
+    const experimentsElement = document.createElement('div');
+    experimentsElement.className = 'experiments';
+
+    mainInfoDiv.appendChild(header);
+    mainInfoDiv.appendChild(accElement);
+    app.appendChild(experimentsElement);
+
+    const expdiv = document.getElementsByClassName('experiments')[0];
+    const noExp = document.createElement('div');
+    noExp.innerHTML = '<h2> No active experiments </h2>';
+    noExp.className = 'no-experiments';
+    expdiv.appendChild(noExp);
+}
+
 let href;
 function initVWO(data){
     const app = document.getElementById('app');
     href = data.curhref;
     if (data.valid === 0)
       notAvailable();
+    else if(data.valid === 2)
+      noExperimentsData();
     else {
         app.querySelector('.loading').remove();
         const VWOData = data;

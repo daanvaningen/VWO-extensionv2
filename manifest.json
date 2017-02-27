@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "VWO extension",
-  "version": "0.1.0",
-  "description": "A Visual Web Optimizer extension to see active experiments, change the variation you are in and quickly hop in the VWO Editor to make changes to experiments.",
+  "version": "1.1.0",
+  "description": "A Visual Web Optimizer extension to see active experiments and change variations",
   "author": "Richard Bieringa & Daan van Ingen",
 
   "icons": { "16": "./img/vwo.png",

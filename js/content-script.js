@@ -21,8 +21,7 @@ document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
   VWOData = e.detail;
   scriptEl.remove();
-  length = Object.keys(VWOData.experiments).length;
-  chrome.runtime.sendMessage({message: "count_experiments"});
+  // length = Object.keys(VWOData.experiments).length;
 });
 
 chrome.runtime.onMessage.addListener(
@@ -32,6 +31,10 @@ chrome.runtime.onMessage.addListener(
     }
     if(request.message == "Reload"){
         window.location.reload();
+    }
+    if(request.message == "count_experiments"){
+        console.log('eeeyyyy');
+        sendResponse({num_exp:length});
     }
   });
   // Remove script element from page

@@ -11,7 +11,11 @@
       VWOData.experiments = window._vwo_exp;
       VWOData.campaignData = window._vwo_campaignData;
       VWOData.curhref = window.location.href;
-    } else {
+    }
+    else if(window._vwo_code){
+        VWOData.valid = 2;
+    }
+    else {
       VWOData.valid = 0;
     }
     return VWOData

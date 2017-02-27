@@ -75,12 +75,13 @@ chrome.browserAction.onClicked.addListener(function (tab) { //Fired when User Cl
       });
     });
 }); */
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-      console.log('received');
-    if (request.message == "count_experiments")
-      console.log(request.count);
-  });
+
+// chrome.runtime.onMessage.addListener(
+//   function(request, sender, sendResponse) {
+//       console.log('received');
+//     if (request.message == "count_experiments")
+//       console.log(request.count);
+//   });
 
 
 function reloadPage(){
