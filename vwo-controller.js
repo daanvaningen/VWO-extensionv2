@@ -110,10 +110,24 @@ function changeCookie(){
     // })
 }
 
+function add_exp_type(x, obj){
+    console.log(obj)
+    var type = obj.type;
+    switch (type) {
+        case "SPLIT_URL":
+            x.innerHTML += '<p> Split url test</p>';
+            break;
+        case "VISUAL_AB":
+            x.innerHTML += '<p> A/B test</p>';
+            break;
+        default:
+            x.innerHTML += '<p> Unknown test type</p>';
+    }
+}
 
 function add_exp_name(x, obj){
-    var name = obj.name
-    x.innerHTML = '<p>' + name +'</p>';
+    var name = obj.name;
+    x.innerHTML += '<p>' + name +'</p>';
 }
 
 
@@ -140,9 +154,7 @@ function add_vars(x, exp, campD){
 function add_experiments(experiments, campaignData){
     var i = 0;
     const expdiv = document.getElementsByClassName('experiments')[0];
-    console.log(experiments);
-    console.log(campaignData);
-    // console.log(experiments);s
+
     for(var key in experiments){
         if(experiments.hasOwnProperty(key) && campaignData.hasOwnProperty(key)){
             i ++;
@@ -151,6 +163,7 @@ function add_experiments(experiments, campaignData){
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
+            add_exp_type(x, exp);
             add_exp_name(x, exp);
             add_vars(x, exp, campD);
             expdiv.appendChild(x);
