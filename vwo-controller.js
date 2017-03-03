@@ -170,7 +170,8 @@ function add_experiments(experiments, campaignData){
 function notAvailable() {
     app.querySelector('.loading').remove();
     const notFound = document.createElement('div');
-          notFound.innerHTML = 'VWO not found on this page';
+    notFound.className = 'VWONotFound'
+          notFound.innerHTML = '<h1>VWO not found on this page</h1>';
     app.appendChild(notFound);
 }
 
