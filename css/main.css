@@ -1,0 +1,72 @@
+#app {
+  min-width: 400px;
+  min-height: 50px;
+}
+
+#info > img {
+  height: 20px;
+}
+
+#info > .infoText {
+    visibility: hidden;
+    width: 350px;
+    background-color: #edeeef;
+    color: #009fe3;
+    text-align: center;
+    border-radius: 6px;
+    padding: 15px 15px;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+#info > img:hover + .infoText {
+    visibility: visible;
+}
+
+.VWONotFound {
+  text-align: center;
+  border-left: 5px solid red;
+}
+
+.mainInformation > .header > h1 {
+  margin-top: 5px;
+}
+
+.mainInformation {
+  text-align: center;
+  border-left: 5px solid #009fe3
+}
+
+.experiments > div[class^='exp'] {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-left:3px solid green;
+  border-width: 80%;
+  background-color: #edeeef;
+  font-weight: bold;
+}
+
+.experiments > div[class^='exp']:hover {
+  background-color: #f2f2f2
+}
+
+.experiments .variation_select{
+  margin-top: 5px;
+  cursor: pointer;
+  padding: 3px;
+}
+
+.experiments select {
+  width: 60%;
+}
+
+.experiments .no-experiments {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-left:3px solid red;
+  border-width: 80%;
+  background-color: #edeeef;
+  color:red;
+}
