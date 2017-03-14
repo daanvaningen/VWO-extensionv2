@@ -30,10 +30,24 @@ function changeCookie(doReload){
     // })
 }
 
+function add_exp_type(x, obj){
+    console.log(obj)
+    var type = obj.type;
+    switch (type) {
+        case "SPLIT_URL":
+            x.innerHTML += '<p> Split url test</p>';
+            break;
+        case "VISUAL_AB":
+            x.innerHTML += '<p> A/B test</p>';
+            break;
+        default:
+            x.innerHTML += '<p> Unknown test type</p>';
+    }
+}
 
 function add_exp_name(x, obj){
-    var name = obj.name
-    x.innerHTML = '<p>' + name +'</p>';
+    var name = obj.name;
+    x.innerHTML += '<p>' + name +'</p>';
 }
 
 
@@ -69,6 +83,7 @@ function add_experiments(experiments, campaignData){
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
+            add_exp_type(x, exp);
             add_exp_name(x, exp);
             add_vars(x, exp, campD);
             expdiv.appendChild(x);
@@ -88,7 +103,8 @@ function add_experiments(experiments, campaignData){
 function notAvailable() {
     app.querySelector('.loading').remove();
     const notFound = document.createElement('div');
-          notFound.innerHTML = 'VWO not found on this page';
+    notFound.className = 'VWONotFound'
+          notFound.innerHTML = '<h1>VWO not found on this page</h1>';
     app.appendChild(notFound);
 }
 
