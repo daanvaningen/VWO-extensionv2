@@ -3,8 +3,20 @@ const scriptEl = document.createElement('script');
       scriptEl.type = 'text/javascript';
       scriptEl.src = chrome.extension.getURL('/js/dom-script.js');
 
+const scriptE2 = document.createElement('script');
+      scriptE2.type = 'text/javascript';
+      scriptE2.src = chrome.extension.getURL('/js/goals.js');
+
+const scriptE3 = document.createElement('script');
+    scriptE3.type = 'text/javascript';
+    scriptE3.src = chrome.extension.getURL('/js/ajaxHook.js');
+
 let VWOData;
 let length;
+let body = document.getElementsByTagName('body')[0];
+// body.append(scriptE2);
+// body.append(scriptE3);
+
 // console.log(window);
 // console.log("content-script " + window._vwo_acc_id);
 window.addEventListener("load", function() {
@@ -12,7 +24,7 @@ window.addEventListener("load", function() {
 }, true);
 
 function requestVWOData() {
-  let body = document.getElementsByTagName('body')[0];
+  // let body = document.getElementsByTagName('body')[0];
   body.append(scriptEl);
 }
 
@@ -20,6 +32,9 @@ function requestVWOData() {
 document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
   VWOData = e.detail;
+  if (VWOData.valid === 1){
+    body.append(scriptE3);
+  }
   scriptEl.remove();
   // length = Object.keys(VWOData.experiments).length;
 });
@@ -33,17 +48,7 @@ chrome.runtime.onMessage.addListener(
         window.location.reload();
     }
     if(request.message == "count_experiments"){
-        console.log('eeeyyyy');
         sendResponse({num_exp:length});
     }
   });
   // Remove script element from page
-
-
-// chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-//   console.log('eeeeyeyeyeye');
-//   if (msg.greeting == 'hello') {
-//     console.log("Message recieved!");
-//   }
-//   return true; // <-- Required if you want to use sendResponse asynchronously!
-// });

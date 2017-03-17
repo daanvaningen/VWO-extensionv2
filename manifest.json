@@ -22,10 +22,15 @@
     "activeTab",
     "http://*/*",
     "https://*/*",
+    "webRequest",
     "storage",
     "cookies"
   ],
-  "web_accessible_resources" : ["/js/dom-script.js"],
+  "web_accessible_resources" : [
+    "/js/dom-script.js",
+    "/js/goals.js",
+    "/js/ajaxHook.js"
+  ],
 
   "content_scripts": [
     {

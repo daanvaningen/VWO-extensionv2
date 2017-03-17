@@ -111,7 +111,6 @@ function changeCookie(){
 }
 
 function add_exp_type(x, obj){
-    console.log(obj)
     var type = obj.type;
     switch (type) {
         case "SPLIT_URL":
