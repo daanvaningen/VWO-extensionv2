@@ -1,6 +1,6 @@
 #app {
   min-width: 400px;
-  min-height: 50px;
+  min-height: 70px;
 }
 
 #info > img {
@@ -64,8 +64,13 @@
 }
 
 .experiments select {
-  width: 60%;
+  width: 80%;
 }
+
+/*.experiments.scroll {
+  max-height: 300px;
+  overflow-y: scroll;
+}*/
 
 .no-experiments {
   padding: 10px;
@@ -74,4 +79,72 @@
   border-width: 80%;
   background-color: #edeeef;
   color:red;
+}
+
+.control-switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 20px;
+}
+
+.control-switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 10px;
+  width: 10px;
+  left: 5px;
+  bottom: 5px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(10px);
+  -ms-transform: translateX(10px);
+  transform: translateX(10px);
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.resetToControl {
+  text-align: center;
+  margin-bottom: 5px;
+  vertical-align: middle;
+}
+
+.resetToControl > span {
+  font-size: 15px;
+  font-weight: bold;
+  padding-right: 3px;
+}
+
+.resetToControl label {
+  vertical-align: bottom;
 }

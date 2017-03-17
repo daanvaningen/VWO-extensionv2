@@ -1,5 +1,4 @@
-function changeCookie(doReload){
-  console.log(doReload);
+function changeCookie(){
     var selected = this.value;
     var cookie_name = this.parentElement.id;
     var domain;
@@ -54,7 +53,7 @@ function add_vars(x, exp, campD){
     var variations = exp.comb_n;
     var dropdown = document.createElement('select');
     var i = 1;
-    dropdown.setAttribute('onchange', 'changeCookie(true)');
+    dropdown.onchange = changeCookie;
     dropdown.className = 'variation_select'
 
     for(var key in variations){
@@ -94,7 +93,19 @@ function add_experiments(experiments, campaignData){
         noExp.className = 'no-experiments';
         expdiv.appendChild(noExp);
     }
-
+    else {
+        const reset = document.createElement('div');
+            reset.className = 'resetToControl';
+            reset.innerHTML = '<span>Set all experiments to control </span>\
+                            <label class="control-switch"> \
+                            <input type="checkbox"> \
+                            <div class="slider round"></div> \
+                            </label>';
+            const mainInfo = document.getElementsByClassName('mainInformation')[0];
+            // mainInfo.insertBefore(reset, expdiv);
+            mainInfo.parentNode.insertBefore(reset, mainInfo.nextSibling);
+        expdiv.setAttribute('style', 'max-height:300px;overflow-y:scroll');
+    }
     // chrome.browserAction.setBadgeText({text:''+i+''})
 }
 

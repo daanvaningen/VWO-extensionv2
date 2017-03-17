@@ -32,9 +32,9 @@ function requestVWOData() {
 document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
   VWOData = e.detail;
-  if (VWOData.valid === 1){
-    body.append(scriptE3);
-  }
+  // if (VWOData.valid === 1){
+  //   body.append(scriptE3);
+  // }
   scriptEl.remove();
   // length = Object.keys(VWOData.experiments).length;
 });
