@@ -18,6 +18,9 @@ function changeCookie(){
                 chrome.runtime.getBackgroundPage(function(eventPage){
                     eventPage.reloadPage();
                 })
+                setTimeout(function(){
+                    window.close();
+                }, 1000);
             })
         })
     })
@@ -28,6 +31,100 @@ function changeCookie(){
     //     "value":selected
     // })
 }
+
+var experimentsCookieNames = [];
+function changeCookies(){
+    console.log(experimentsCookieNames);
+    if(experimentsCookieNames.length === 0 ){
+        chrome.runtime.getBackgroundPage(function(eventPage){
+            eventPage.reloadPage();
+        })
+        setTimeout(function(){
+            window.close();
+        }, 1000);
+    }
+    cookie_name = experimentsCookieNames.pop();
+    chrome.cookies.getAll({
+        "name": cookie_name,
+    }, function(cookies){
+        domain = "http://" + cookies[0].domain;
+        chrome.cookies.remove({
+            "url": domain,
+            "name": cookie_name
+        }, function() {
+            chrome.cookies.set({
+                "url": domain,
+                "name": cookie_name,
+                "value": '1'
+            }, function (){
+                changeCookies();
+            })
+        })
+    })
+}
+
+function allExpToControl(){
+    var expChilds = document.querySelector('.experiments').children;
+    for(var i = 0; i < expChilds.length; i++){
+        experimentsCookieNames.push(expChilds[i].id);
+    }
+    changeCookies();
+}
+
+
+/*
+function allExpToControl(){
+    var expIDs = [];
+    var expChilds = document.querySelector('.experiments').children;
+    var domain;
+    var cookie_name
+    var numChilds = expChilds.length;
+    var experiments = [];
+    var set = [];
+    console.log(numChilds)
+    for(var i = 0; i < numChilds; i++){
+        cookie_name = expChilds[i].id;
+        experiments.push(cookie_name);
+        chrome.cookies.getAll({
+            "name": cookie_name,
+        }, function(cookies){
+            domain = "http://" + cookies[0].domain;
+            chrome.cookies.remove({
+                "url": domain,
+                "name": cookie_name
+            }, function() {
+                chrome.cookies.set({
+                    "url": domain,
+                    "name": cookie_name,
+                    "value": '1'
+                }, function (){
+                    console.log(cookie_name);
+                    set.push(cookie_name);
+                    if(checkSet(experiments, set)){
+                        console.log('completly done setting cookies');
+                    }
+                })
+            })
+        })
+    }
+    //
+    // for(var i = 0; i < expChilds.length; i++){
+    //     cookie_name = expChilds[i].id;
+    //     chrome.cookies.getAll({
+    //         "name": cookie_name,
+    //     }, function(cookies){
+    //         console.log(cookies);
+    //     });
+    // }
+    // setTimeout(function(){
+    //     window.close();
+    // }, 1000);
+    // chrome.runtime.getBackgroundPage(function(eventPage){
+    //     eventPage.reloadPage();
+    // })
+
+}
+*/
 
 function add_exp_type(x, obj){
     var type = obj.type;
@@ -42,6 +139,7 @@ function add_exp_type(x, obj){
             x.innerHTML += '<p> Unknown test type</p>';
     }
 }
+
 
 function add_exp_name(x, obj){
     var name = obj.name;
@@ -101,9 +199,11 @@ function add_experiments(experiments, campaignData){
                             <input type="checkbox"> \
                             <div class="slider round"></div> \
                             </label>';
-            const mainInfo = document.getElementsByClassName('mainInformation')[0];
-            // mainInfo.insertBefore(reset, expdiv);
-            mainInfo.parentNode.insertBefore(reset, mainInfo.nextSibling);
+        const mainInfo = document.getElementsByClassName('mainInformation')[0];
+        mainInfo.parentNode.insertBefore(reset, mainInfo.nextSibling);
+
+        const resetRadio = document.querySelector('.resetToControl input');
+        resetRadio.onclick = allExpToControl;
         expdiv.setAttribute('style', 'max-height:300px;overflow-y:scroll');
     }
     // chrome.browserAction.setBadgeText({text:''+i+''})
@@ -117,6 +217,7 @@ function notAvailable() {
           notFound.innerHTML = '<h1>VWO not found on this page</h1>';
     app.appendChild(notFound);
 }
+
 
 function noExperimentsData() {
     app.querySelector('.loading').remove();
@@ -146,6 +247,7 @@ function noExperimentsData() {
     noExp.className = 'no-experiments';
     expdiv.appendChild(noExp);
 }
+
 
 let href;
 function initVWO(data){
