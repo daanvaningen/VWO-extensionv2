@@ -148,3 +148,13 @@ input:checked + .slider:before {
 .resetToControl label {
   vertical-align: bottom;
 }
+
+.eventsHeader {
+  font-weight: bold;
+}
+
+#eventsBox {
+  height: 50px;
+  border: 1px solid black;
+  overflow-y: scroll;
+}

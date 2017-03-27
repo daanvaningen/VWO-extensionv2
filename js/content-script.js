@@ -39,6 +39,7 @@ document.addEventListener('VWOData', function (e){
   // length = Object.keys(VWOData.experiments).length;
 });
 
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.message == "VWOData"){
