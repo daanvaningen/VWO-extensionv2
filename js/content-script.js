@@ -1,3 +1,10 @@
+/* ClickValue Chrome VWO extension
+ * Richard Bieringa
+ * Daan van Ingen
+ *
+ *
+ */
+
 //Create script in DOM to collect VWO data
 const scriptEl = document.createElement('script');
       scriptEl.type = 'text/javascript';

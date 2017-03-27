@@ -1,3 +1,10 @@
+/* ClickValue Chrome VWO extension
+ * Richard Bieringa
+ * Daan van Ingen
+ *
+ *
+ */
+
 (() => {
   // VWO data object
   const VWOData = {};
