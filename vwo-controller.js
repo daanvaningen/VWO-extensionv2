@@ -1,3 +1,27 @@
+/* ClickValue Chrome VWO extension
+ * Richard Bieringa
+ * Daan van Ingen
+ *
+ * vwo-controller.js handles the app layout and is responsible for handling
+ * variations changes. Included bij main.html
+ */
+
+/* Resets the current page and closes the current window after 1 sec.
+ */
+function resetCollapse(){
+    chrome.runtime.getBackgroundPage(function(eventPage){
+        eventPage.reloadPage();
+    })
+    setTimeout(function(){
+        window.close();
+    }, 1000);
+}
+
+
+/* Selected boxes onChange function
+ * Change a single cookie value when a value gets selected. Take the value
+ * of the selected elemented and use the parent element id to set the cookie.
+ */
 function changeCookie(){
     var selected = this.value;
     var cookie_name = this.parentElement.id;
@@ -5,6 +29,7 @@ function changeCookie(){
     chrome.cookies.getAll({
         "name": cookie_name,
     }, function(cookies){
+        //Dynamically get domain
         domain = "http://" + cookies[0].domain;
         chrome.cookies.remove({
             "url": domain,
@@ -14,36 +39,24 @@ function changeCookie(){
                 "url": domain,
                 "name": cookie_name,
                 "value": selected
-            }, function (){
-                chrome.runtime.getBackgroundPage(function(eventPage){
-                    eventPage.reloadPage();
-                })
-                setTimeout(function(){
-                    window.close();
-                }, 1000);
-            })
+            }, resetCollapse() // Callback function
+            )
         })
     })
-
-    // chrome.cookies.set({
-    //     "name":cookie_name,
-    //     "url":href,
-    //     "value":selected
-    // })
 }
 
-var experimentsCookieNames = [];
-function changeCookies(){
-    console.log(experimentsCookieNames);
+
+/* Recursive function to set all the experiments to control. Pop an element
+ * from the experiments list and set the cookie value to 1. Continue untill
+ * the list is empty
+ */
+function changeCookies(experimentsCookieNames){
     if(experimentsCookieNames.length === 0 ){
-        chrome.runtime.getBackgroundPage(function(eventPage){
-            eventPage.reloadPage();
-        })
-        setTimeout(function(){
-            window.close();
-        }, 1000);
+        resetCollapse();
+        return;
     }
     cookie_name = experimentsCookieNames.pop();
+    console.log(experimentsCookieNames);
     chrome.cookies.getAll({
         "name": cookie_name,
     }, function(cookies){
@@ -57,21 +70,28 @@ function changeCookies(){
                 "name": cookie_name,
                 "value": '1'
             }, function (){
-                changeCookies();
+                changeCookies(experimentsCookieNames); // Callback
             })
         })
     })
 }
 
+
+/* Radio button onclick function.
+ * Gathers active experiment names and calls the changeCookies function.
+ */
 function allExpToControl(){
+    var experimentsCookieNames = [];
     var expChilds = document.querySelector('.experiments').children;
     for(var i = 0; i < expChilds.length; i++){
         experimentsCookieNames.push(expChilds[i].id);
     }
-    changeCookies();
+    changeCookies(experimentsCookieNames);
 }
 
 
+/* Called by add_experiments(). Adds experiment type information
+ */
 function add_exp_type(x, obj){
     var type = obj.type;
     switch (type) {
@@ -87,12 +107,18 @@ function add_exp_type(x, obj){
 }
 
 
+/* Called by add_experiments().
+ * Adds experiment name information
+ */
 function add_exp_name(x, obj){
     var name = obj.name;
     x.innerHTML += '<p>' + name +'</p>';
 }
 
 
+/* Called by add_experiments().
+ * Adds select box with correct variation selected
+ */
 function add_vars(x, exp, campD){
     var variations = exp.comb_n;
     var dropdown = document.createElement('select');
@@ -113,6 +139,9 @@ function add_vars(x, exp, campD){
 }
 
 
+/* Called by initVWO.
+ * Sets up html elements to add experiment information, if any.
+ */
 function add_experiments(experiments, campaignData){
     var i = 0;
     const expdiv = document.getElementsByClassName('experiments')[0];
@@ -131,13 +160,13 @@ function add_experiments(experiments, campaignData){
             expdiv.appendChild(x);
         }
     }
-    if(i == 0){
+    if(i == 0){ // No experiments
         const noExp = document.createElement('div');
         noExp.innerHTML = '<h2> No active experiments </h2>';
         noExp.className = 'no-experiments';
         expdiv.appendChild(noExp);
     }
-    else {
+    else { // Add reset to control radio button
         const reset = document.createElement('div');
             reset.className = 'resetToControl';
             reset.innerHTML = '<span>Set all experiments to control </span>\
@@ -162,6 +191,7 @@ function notAvailable() {
     notFound.className = 'VWONotFound'
           notFound.innerHTML = '<h1>VWO not found on this page</h1>';
     app.appendChild(notFound);
+    chrome.browserAction.setBadgeText({text:''+0+''})
 }
 
 

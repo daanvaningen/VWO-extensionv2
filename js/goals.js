@@ -1,17 +1,10 @@
-/*
-(function(open) {
-
-    XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
-
-        this.addEventListener("readystatechange", function() {
-            console.log(this.readyState);
-        }, false);
-
-        open.call(this, method, url, async, user, pass);
-    };
-
-})(XMLHttpRequest.prototype.open);
-*/
+/* ClickValue Chrome VWO extension
+ * Richard Bieringa
+ * Daan van Ingen
+ *
+ *
+ */
+ 
 (() => {
     console.log('goals.js');
 var oReq = new XMLHttpRequest();

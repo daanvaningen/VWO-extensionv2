@@ -1,3 +1,10 @@
+/* ClickValue Chrome VWO extension
+ * Richard Bieringa
+ * Daan van Ingen
+ *
+ *
+ */
+
 console.log('AjaxHook');
 var hook = new AjaxHook();
 var regex = new RegExp('.*');
