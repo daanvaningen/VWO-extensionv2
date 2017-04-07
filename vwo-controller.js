@@ -181,7 +181,7 @@ function add_experiments(experiments, campaignData){
         resetRadio.onclick = allExpToControl;
         expdiv.setAttribute('style', 'max-height:300px;overflow-y:scroll');
     }
-    chrome.browserAction.setBadgeText({text:''+i+''})
+    // chrome.browserAction.setBadgeText({text:''+i+''})
 }
 
 
@@ -225,6 +225,18 @@ function noExperimentsData() {
 }
 
 
+function add_events_box(eventsElement){
+    const eventsHeader = document.createElement('div');
+    eventsHeader.className = 'eventsHeader'
+    eventsHeader.innerHTML = '<p>Events:</p>'
+    eventsElement.appendChild(eventsHeader);
+
+    const eventsBox = document.createElement('div');
+    eventsBox.id = 'eventsBox';
+    eventsElement.appendChild(eventsBox);
+}
+
+
 let href;
 function initVWO(data){
     const app = document.getElementById('app');
@@ -263,13 +275,17 @@ function initVWO(data){
         const experimentsElement = document.createElement('div');
         experimentsElement.className = 'experiments';
 
+        const eventsElement = document.createElement('div');
+        eventsElement.id = 'events';
 
         mainInfoDiv.appendChild(header);
         mainInfoDiv.appendChild(accElement);
         mainInfoDiv.appendChild(userElement);
         app.appendChild(experimentsElement);
+        app.appendChild(eventsElement);
 
         add_experiments(experiments, campaignData);
+        add_events_box(eventsElement);
     }
 }
 
@@ -278,4 +294,35 @@ window.addEventListener('load', function(evt) {
     chrome.runtime.getBackgroundPage(function(eventPage){
         eventPage.queryContentScript(initVWO);
     })
+});
+
+
+/* Add key value pair to storage. Update current key value if present.
+ */
+function setStorage(key, value){
+    var storage = chrome.storage.local;
+    //
+    // storage.get("key1", function (items){
+    //     if(items.key1 != undefined) { // Or items["key1"] != undefined
+    //        storage.remove("key1", function (){
+    //            console.log("Key1 has been removed");
+    //        });
+    //     }
+    //     else {
+    //         storage.set({"key1":"value1"}, function (){
+    //             console.log("Key1 has been set");
+    //         });
+    //     }
+    // });
+    storage.set({key:value}, function (){
+        console.log(key);
+    });
+}
+chrome.cookies.onChanged.addListener(function(changeInfo) {
+    if(changeInfo.cookie.name.includes('_vis_opt_exp_')){
+        console.log(changeInfo);
+        setStorage('_vis_opt_exp_', 'x');
+        var eventsBox = document.getElementById('eventsBox');
+        eventsBox.innerHTML += '<span>vwo goal fired<span><br>'
+    }
 });
