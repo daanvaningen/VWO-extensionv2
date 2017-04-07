@@ -3,10 +3,26 @@
   min-height: 70px;
 }
 
-#info > img {
-  height: 20px;
+#info > div{
+  text-align: center;
 }
 
+#info > img {
+  height: 20px;
+  float:left;
+}
+
+.ClickValue-link-title {
+  color:black;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.ClickValue-link-title:hover {
+  cursor: pointer;
+
+}
 #info > .infoText {
     visibility: hidden;
     width: 350px;
@@ -15,6 +31,7 @@
     text-align: center;
     border-radius: 6px;
     padding: 15px 15px;
+    float: left;
 
     /* Position the tooltip */
     position: absolute;
@@ -37,6 +54,10 @@
 .mainInformation {
   text-align: center;
   border-left: 5px solid #009fe3
+}
+
+.accountID, userID {
+  float left;
 }
 
 .experiments > div[class^='exp'] {

@@ -11,6 +11,7 @@
 
   // Determines VWO on page and fills data object
   const getVWOData = () => {
+    VWOData.valid = 0;
     if (window._vwo_acc_id) {
       VWOData.valid = 1;
       VWOData.accID = window._vwo_acc_id;
@@ -21,9 +22,6 @@
     }
     else if(window._vwo_code){
         VWOData.valid = 2;
-    }
-    else {
-      VWOData.valid = 0;
     }
     return VWOData
   }

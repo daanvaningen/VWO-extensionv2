@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ClickValue's VWO Chrome extension",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "A Visual Web Optimizer extension to see active experiments and change variations",
   "author": "Richard Bieringa & Daan van Ingen",
 

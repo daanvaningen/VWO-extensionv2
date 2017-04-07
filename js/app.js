@@ -19,6 +19,9 @@ function queryContentScript(callback){
     });
 }
 
+function openTab(){
+    chrome.tabs.create({url:"http://www.clickvalue.nl"});
+}
 // chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 //     queryContentScript(initVWO);
 // });
