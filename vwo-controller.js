@@ -195,19 +195,32 @@ function noExperimentsData() {
 }
 
 
-function add_events_box(eventsElement){
-    const eventsHeader = document.createElement('div');
-    eventsHeader.className = 'eventsHeader'
-    eventsHeader.innerHTML = '<p>Events:</p>'
+function add_events_header(eventsElement){
+    var eventsHeader = document.createElement('P');
+    var text = document.createTextNode("Events");
+    eventsHeader.appendChild(text);
     eventsElement.appendChild(eventsHeader);
 
-    const eventsBox = document.createElement('div');
-    eventsBox.id = 'eventsBox';
-    eventsElement.appendChild(eventsBox);
+    const garbageBin = document.createElement('img');
+    garbageBin.setAttribute('src', 'img/garbageBin.png');
+    garbageBin.onclick = function() {
+        console.log('click');
+        document.getElementById('eventsBox').innerHTML = "";
+        chrome.storage.local.clear();
+    }
+    eventsElement.appendChild(garbageBin);
+    // eventsElement.appendChild('<br>');
 }
 
 
+function add_events_box(app){
+    const eventsBox = document.createElement('div');
+    eventsBox.id = 'eventsBox';
+    app.appendChild(eventsBox);
+}
+
 let href;
+let VWOData;
 function initVWO(data){
     const app = document.getElementById('app');
     href = data.curhref;
@@ -217,7 +230,8 @@ function initVWO(data){
       noExperimentsData();
     else {
         app.querySelector('.loading').remove();
-        const VWOData = data;
+        VWOData = data;
+        console.log(VWOData);
 
         const mainInfo = document.createElement('div');
         mainInfo.className = 'mainInformation';
@@ -255,7 +269,9 @@ function initVWO(data){
         app.appendChild(eventsElement);
 
         add_experiments(experiments, campaignData);
-        add_events_box(eventsElement);
+        add_events_header(eventsElement);
+        add_events_box(app);
+        appendGoals();
     }
 }
 
@@ -267,32 +283,57 @@ window.addEventListener('load', function(evt) {
 });
 
 
+function getGoalInfo(testNum, goalNum){
+    let goalData = VWOData.experiments;
+    var type = goalData[testNum].goals[goalNum].type;
+    return goalData[testNum].name + ' Goal: ' + goalNum + " -- " + type;
+}
+
+
+function appendGoals(){
+    var splitKey;
+    var eventsBox = document.getElementById('eventsBox');
+    eventsBox.innerHTML = '';
+    chrome.storage.local.get(null, function(items) {
+        for(key in items){
+            if(key != "key" && !key.includes('combi')){
+                splitKey = key.split('_');
+                console.log(splitKey);
+                text = getGoalInfo(splitKey[0], splitKey[2]);
+                eventsBox.innerHTML += '<span>'+text+'<span><br>';
+
+            }
+        }
+    });
+}
+
+
 /* Add key value pair to storage. Update current key value if present.
  */
 function setStorage(key, value){
     var storage = chrome.storage.local;
-    //
-    // storage.get("key1", function (items){
-    //     if(items.key1 != undefined) { // Or items["key1"] != undefined
-    //        storage.remove("key1", function (){
-    //            console.log("Key1 has been removed");
-    //        });
-    //     }
-    //     else {
-    //         storage.set({"key1":"value1"}, function (){
-    //             console.log("Key1 has been set");
-    //         });
-    //     }
-    // });
-    storage.set({key:value}, function (){
-        console.log(key);
+    var obj = {};
+    obj[key] += value;
+    storage.get(key, function (items){
+        if(items.key != undefined) { // Or items["key1"] != undefined
+           return;
+        }
+        else {
+            storage.set(obj, function (){
+                appendGoals();
+            });
+        }
     });
 }
+
+
+/* Onchange Listener vwo cookies
+ */
 chrome.cookies.onChanged.addListener(function(changeInfo) {
     if(changeInfo.cookie.name.includes('_vis_opt_exp_')){
-        console.log(changeInfo);
-        setStorage('_vis_opt_exp_', 'x');
-        var eventsBox = document.getElementById('eventsBox');
-        eventsBox.innerHTML += '<span>vwo goal fired<span><br>'
+        var str = changeInfo.cookie.name;
+        var key = str.substring('_vis_opt_exp_'.length);
+        console.log(key);
+        setStorage(key, '_vis_opt_exp_');
     }
 });
