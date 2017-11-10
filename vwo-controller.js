@@ -56,7 +56,6 @@ function changeCookies(experimentsCookieNames){
         return;
     }
     cookie_name = experimentsCookieNames.pop();
-    // console.log(experimentsCookieNames);
     chrome.cookies.getAll({
         "name": cookie_name,
     }, function(cookies){
@@ -76,6 +75,22 @@ function changeCookies(experimentsCookieNames){
     })
 }
 
+function removeGoalCookie(expID, goalID){
+    var cookieName = '_vis_opt_exp_' + expID + '_goal_' + goalID;
+    var domain;
+    console.log(cookieName);
+    chrome.cookies.getAll({
+        "name": cookieName,
+    }, function(cookies){
+        domain = "http://" + cookies[0].domain;
+        chrome.cookies.remove({
+            "url": domain,
+            "name": cookieName
+        }, function(){
+            console.log("removed cookie with name: " + cookieName);
+        })
+    })
+}
 
 /* Radio button onclick function.
  * Gathers active experiment names and calls the changeCookies function.
@@ -179,7 +194,7 @@ function add_experiments(experiments, campaignData){
 
         const resetRadio = document.querySelector('.resetToControl input');
         resetRadio.onclick = allExpToControl;
-        expdiv.setAttribute('style', 'max-height:300px;overflow-y:scroll');
+        expdiv.setAttribute('style', 'max-height:250px;overflow-y:scroll');
     }
     // chrome.browserAction.setBadgeText({text:''+i+''})
 }
@@ -227,15 +242,24 @@ function noExperimentsData() {
 
 function add_events_header(eventsElement){
     var eventsHeader = document.createElement('P');
-    var text = document.createTextNode("Events");
+    var text = document.createTextNode("Goals fired on this page. Click on a goal for information about the goal and click on the garbage bin to remove the goals");
     eventsHeader.appendChild(text);
     eventsElement.appendChild(eventsHeader);
 
     const garbageBin = document.createElement('img');
     garbageBin.setAttribute('src', 'img/garbageBin.png');
     garbageBin.onclick = function() {
-        // console.log('click');
         document.getElementById('eventsBox').innerHTML = "";
+        chrome.storage.local.get(null, function(items) {
+            for(key in items){
+                if(key != "key" && !key.includes('combi')){
+                    splitKey = key.split('_');
+                    if(document.getElementById('_vis_opt_exp_'+splitKey[0]+'_combi')){
+                        removeGoalCookie(splitKey[0], splitKey[2]);
+                    }
+                }
+            }
+        });
         chrome.storage.local.clear();
     }
     eventsElement.appendChild(garbageBin);
@@ -253,7 +277,8 @@ let href;
 let VWOData;
 function initVWO(data){
     const app = document.getElementById('app');
-    if (data.valid === 0)
+    console.log(data);
+    if (data === undefined || data.valid === 0)
       notAvailable();
     else if(data.valid === 2)
       noExperimentsData();
@@ -261,7 +286,6 @@ function initVWO(data){
         href = data.curhref;
         app.querySelector('.loading').remove();
         VWOData = data;
-        console.log(VWOData);
 
         const mainInfo = document.createElement('div');
         mainInfo.className = 'mainInformation';
@@ -278,13 +302,20 @@ function initVWO(data){
         const experiments = VWOData.experiments;
         const campaignData = VWOData.campaignData;
 
-        const accElement = document.createElement('div');
-              accElement.innerHTML = '<p> Account ID: ' + accID + '</p>';
-        accElement.className = 'accountID';
+        /* Removed since 13-9-2017
+        if(accID != undefined){
+            const accElement = document.createElement('div');
+                  accElement.innerHTML = '<p> Account ID: ' + accID + '</p>';
+            accElement.className = 'accountID';
+            mainInfoDiv.appendChild(accElement);
+        }
 
-        const userElement = document.createElement('div');
-              userElement.innerHTML = '<p> User ID: ' + userID +'</p>';
-        userElement.className = 'userID';
+        if(userID != undefined){
+            const userElement = document.createElement('div');
+                  userElement.innerHTML = '<p> User ID: ' + userID +'</p>';
+            userElement.className = 'userID';
+            mainInfoDiv.appendChild(userElement);
+        } */
 
         const experimentsElement = document.createElement('div');
         experimentsElement.className = 'experiments';
@@ -293,16 +324,30 @@ function initVWO(data){
         eventsElement.id = 'events';
 
         mainInfoDiv.appendChild(header);
-        mainInfoDiv.appendChild(accElement);
-        mainInfoDiv.appendChild(userElement);
         app.appendChild(experimentsElement);
         app.appendChild(eventsElement);
 
         add_experiments(experiments, campaignData);
-        // add_events_header(eventsElement);
-        // add_events_box(app);
-        // checkGoals();
-        // appendGoals();
+
+        add_events_header(eventsElement);
+        add_events_box(app);
+        checkGoals();
+        var eventsBox = document.getElementById('eventsBox');
+        if(eventsBox) eventsBox.innerHTML = '';
+        window.setInterval(function(){
+            appendGoals();
+            setOnclicks();
+        }, 1000);
+        /* Onchange Listener vwo cookies
+         */
+        /*chrome.cookies.onChanged.addListener(function(changeInfo) {
+            console.log('onChanged')
+            if(changeInfo.cookie.name.includes('_vis_opt_exp_')){
+                var str = changeInfo.cookie.name;
+                var key = str.substring('_vis_opt_exp_'.length);
+                setStorage(key, '_vis_opt_exp_', true);
+            }
+        });*/
     }
 }
 
@@ -312,7 +357,6 @@ window.addEventListener('load', function(evt) {
     });
     /* Clickvalue link click */
     document.getElementsByClassName('ClickValue-link-title')[0].addEventListener('click', function(){
-        console.log('click');
         chrome.runtime.getBackgroundPage(function(eventPage){
             eventPage.openTab();
         })
@@ -329,30 +373,88 @@ function getGoalInfo(testNum, goalNum){
     return '';
 }
 
+function alreadyListed(text){
+    var elems = document.querySelectorAll('#eventsBox > div');
+    for(var i = 0; i < elems.length; i++){
+        if(elems[i].innerText.trim() == text.trim()) return true;
+    }
+    return false;
+}
+
+function setOnclicks(){
+    var elems = document.querySelectorAll('.infoElem');
+    for(var i = 0; i < elems.length; i++){
+	    elems[i].onclick = function(index1){
+		    return function(){
+                elems[index1].style.display = 'none'
+			    elems[index1].nextSibling.style.display = 'block';
+    	    }
+        }(i)
+    }
+    var hiddenElems = document.querySelectorAll('.hiddenInfoElem');
+
+    for(var j = 0; j < hiddenElems.length; j++){
+	    hiddenElems[j].onclick = function(index2){
+		    return function(){
+                hiddenElems[index2].style.display = 'none';
+			    hiddenElems[index2].previousSibling.style.display = 'block';
+    	    }
+        }(j)
+    }
+}
+
+function appendGoalInfo(text, testNum, goalNum){
+    var eventsBox = document.getElementById('eventsBox');
+    eventsBox.innerHTML += '<div class="infoElem">'+text+'</div>';
+
+    var hiddenInfo = document.createElement('div');
+        hiddenInfo.style.display = 'none';
+        hiddenInfo.className = "hiddenInfoElem";
+
+    let goalData = VWOData.experiments;
+    if(goalData[testNum] != undefined){
+        var data = goalData[testNum].goals[goalNum]
+        var tempElem;
+        for(key in data){
+            if(data[key] != ''){ // only append if it holds information
+                tempElem = document.createElement('p')
+                tempElem.innerHTML = key + " : " + data[key]
+                hiddenInfo.appendChild(tempElem);
+            }
+        }
+    }
+    eventsBox.appendChild(hiddenInfo);
+}
 
 function appendGoals(){
     var splitKey;
-    var eventsBox = document.getElementById('eventsBox');
-    eventsBox.innerHTML = '';
+
     chrome.storage.local.get(null, function(items) {
         for(key in items){
             if(key != "key" && !key.includes('combi')){
                 splitKey = key.split('_');
-                // console.log(splitKey);
                 text = getGoalInfo(splitKey[0], splitKey[2]);
-                if(text.length > 0){
-                    eventsBox.innerHTML += '<span>'+text+'<span><br>';
+                if(text.length > 0 && !alreadyListed(text)){
+                    appendGoalInfo(text, splitKey[0], splitKey[2]);
                 }
             }
         }
     });
-
 }
 
+function appendGoal(goal){
+    var splitKey = key.split('_');
+    var eventsBox = document.getElementById('eventsBox');
+    if(eventsBox) eventsBox.innerHTML = '';
+    text = getGoalInfo(splitKey[0], splitKey[2]);
+    if(text.length > 0 && !alreadyListed(text)){
+        eventsBox.innerHTML += '<span>'+text+'<span><br>';
+    }
+}
 
 /* Add key value pair to storage. Update current key value if present.
  */
-function setStorage(key, value){
+function setStorage(key, value, append){
     var storage = chrome.storage.local;
     var obj = {};
     obj[key] += value;
@@ -361,9 +463,8 @@ function setStorage(key, value){
            return;
         }
         else {
-            storage.set(obj, function (){
-                appendGoals();
-            });
+            storage.set(obj)
+            if(append) appendGoal(key);
         }
     });
 }
@@ -371,36 +472,23 @@ function setStorage(key, value){
 
 function logCookies(cookies) {
   for (cookie of cookies) {
-    console.log(cookie.value);
+    //console.log(cookie.value);
   }
 }
 
 
 function checkGoals(){
+    chrome.storage.local.clear();
     var key;
     var str;
     chrome.cookies.getAll({}, function(cookies) {
-       console.log("@getCookies. Cookies found " +  cookies.length);
        for(var i = 0; i < cookies.length; i++){
-            if(cookies[i].name.includes('_vis_opt_exp_')){
+            if(cookies[i].name.includes('_vis_opt_exp_') && cookies[i].name.includes('_goal_')){
                 str = cookies[i].name;
                 key = str.substring('_vis_opt_exp_'.length);
-                // console.log(key);
-                setStorage(key, '_vis_opt_exp_');
+                setStorage(key, '_vis_opt_exp_', false);
             }
         }
     });
-    appendGoals();
+    //appendGoals();
 }
-
-/* Onchange Listener vwo cookies
- */
-chrome.cookies.onChanged.addListener(function(changeInfo) {
-    if(changeInfo.cookie.name.includes('_vis_opt_exp_')){
-        console.log("cookie");
-        var str = changeInfo.cookie.name;
-        var key = str.substring('_vis_opt_exp_'.length);
-        // console.log(key);
-        setStorage(key, '_vis_opt_exp_');
-    }
-});
