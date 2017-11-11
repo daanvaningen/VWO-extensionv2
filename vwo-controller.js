@@ -169,6 +169,7 @@ function add_experiments(experiments, campaignData){
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
+
             add_exp_type(x, exp);
             add_exp_name(x, exp);
             add_vars(x, exp, campD);
@@ -242,12 +243,12 @@ function noExperimentsData() {
 
 function add_events_header(eventsElement){
     var eventsHeader = document.createElement('P');
-    var text = document.createTextNode("Goals fired on this page. Click on a goal for information about the goal and click on the garbage bin to remove the goals");
+    var text = document.createTextNode("Goals fired on this page");
     eventsHeader.appendChild(text);
     eventsElement.appendChild(eventsHeader);
 
     const garbageBin = document.createElement('img');
-    garbageBin.setAttribute('src', 'img/garbageBin.png');
+    garbageBin.setAttribute('src', 'img/garbagebin.png');
     garbageBin.onclick = function() {
         document.getElementById('eventsBox').innerHTML = "";
         chrome.storage.local.get(null, function(items) {
@@ -386,8 +387,8 @@ function setOnclicks(){
     for(var i = 0; i < elems.length; i++){
 	    elems[i].onclick = function(index1){
 		    return function(){
-                elems[index1].style.display = 'none'
-			    elems[index1].nextSibling.style.display = 'block';
+            elems[index1].style.display = 'none'
+            elems[index1].nextSibling.style.display = 'block';
     	    }
         }(i)
     }
@@ -396,8 +397,8 @@ function setOnclicks(){
     for(var j = 0; j < hiddenElems.length; j++){
 	    hiddenElems[j].onclick = function(index2){
 		    return function(){
-                hiddenElems[index2].style.display = 'none';
-			    hiddenElems[index2].previousSibling.style.display = 'block';
+            hiddenElems[index2].style.display = 'none';
+  			    hiddenElems[index2].previousSibling.style.display = 'block';
     	    }
         }(j)
     }

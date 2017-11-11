@@ -175,14 +175,14 @@ input:checked + .slider:before {
 }
 #events > p {
   width:90%;
-  /*font-weight: bold;
-  display: inline;*/
+  font-weight: bold;
+  display: inline;
 }
 
 #events > img {
-  /*float: right;
+  float: right;
   margin-right: 25px;
-  display: inline;*/
+  display: inline;
   height: 20px;
 }
 
@@ -211,6 +211,7 @@ input:checked + .slider:before {
   margin-bottom: .5em;
   cursor: pointer;
   background-color: #edeeef;
+  padding-bottom: 0.5em;
 }
 
 #eventsBox > div.infoElem:hover {
