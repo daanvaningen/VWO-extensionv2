@@ -105,6 +105,23 @@ function allExpToControl(){
 }
 
 
+function prevDefault(){
+    console.log(VWOData.CVPreventDefault);
+    if(!VWOData.CVPreventDefault){
+        VWOData.CVPreventDefault = true;
+        chrome.runtime.getBackgroundPage(function(eventPage){
+            eventPage.prevDefault();
+        })
+    } else {
+        resetCollapse();
+    }
+}
+
+
+function toggleVisibility(elem){
+    if(elem.style.display == 'none') elem.style.display = 'block';
+    else elem.style.display = 'none';
+}
 /* Called by add_experiments(). Adds experiment type information
  */
 function add_exp_type(x, obj){
@@ -153,6 +170,77 @@ function add_vars(x, exp, campD){
     x.appendChild(dropdown);
 }
 
+function add_vars_no_camp_data(x, exp){
+    var variations = exp.comb_n;
+    var dropdown = document.createElement('select');
+    var i = 1;
+    dropdown.onchange = changeCookie;
+    dropdown.className = 'variation_select'
+
+    for(var key in variations){
+        var text = variations[key];
+        if(key === 1){
+            dropdown.innerHTML += '<option value="'+i+'" selected>'+text+'('+Math.round(exp.combs[key]*100)+'%)</option>';
+        } else {
+            dropdown.innerHTML += '<option value="'+i+'">'+text+'('+Math.round(exp.combs[key]*100)+'%)</option>';
+        }
+        i++;
+    }
+    x.appendChild(dropdown);
+}
+
+function createExtraInfoElem(expData, index){
+    var infoWrapper = document.createElement('div');
+        infoWrapper.className = 'extraInfo' + index;
+
+    var codeBox = document.createElement('div');
+        codeBox.className = 'codeIcon';
+        var imgCodeIcon = document.createElement('img');
+            imgCodeIcon.setAttribute('src', 'img/codeicon.png')
+            codeBox.appendChild(imgCodeIcon);
+        infoWrapper.appendChild(codeBox);
+
+    codeBox.onclick = function(currentIndex){
+        return function(){
+            var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
+            var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
+            for(var i = 0; i < infoElems.length; i++){
+                if(i == currentIndex - 1){
+                    toggleVisibility(expElems[i]);
+                }
+                else {
+                    toggleVisibility(expElems[i]);
+                    toggleVisibility(infoElems[i]);
+                }
+            }
+        }
+    }(index)
+
+    var settingsBox = document.createElement('div');
+        settingsBox.className = 'settingsIcon';
+        var imgSettingsIcon = document.createElement('img');
+            imgSettingsIcon.setAttribute('src', 'img/settingsicon.png')
+            settingsBox.appendChild(imgSettingsIcon);
+        infoWrapper.appendChild(settingsBox);
+
+    settingsBox.onclick = function(i){
+        return function(){
+            var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
+            var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
+            for(var i = 0; i < infoElems.length; i++){
+                if(i == currentIndex - 1){
+                    toggleVisibility(expElems[i]);
+                }
+                else {
+                    toggleVisibility(expElems[i]);
+                    toggleVisibility(infoElems[i]);
+                }
+            }
+        }
+    }(index)
+
+    return infoWrapper;
+}
 
 /* Called by initVWO.
  * Sets up html elements to add experiment information, if any.
@@ -160,12 +248,12 @@ function add_vars(x, exp, campD){
 function add_experiments(experiments, campaignData){
     var i = 0;
     const expdiv = document.getElementsByClassName('experiments')[0];
-
     for(var key in experiments){
-        if(experiments.hasOwnProperty(key) && campaignData.hasOwnProperty(key)){
-            i ++;
+        if(experiments.hasOwnProperty(key) && campaignData != undefined && campaignData.hasOwnProperty(key)){
+            i++;
             var exp = experiments[key];
             var campD = campaignData[key];
+            var extraInfo = createExtraInfoElem(exp, i);
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
@@ -173,6 +261,19 @@ function add_experiments(experiments, campaignData){
             add_exp_type(x, exp);
             add_exp_name(x, exp);
             add_vars(x, exp, campD);
+            expdiv.appendChild(extraInfo);
+            expdiv.appendChild(x);
+        }
+        else if(experiments.hasOwnProperty(key) && campaignData == undefined){
+            i++;
+            var exp = experiments[key];
+            var x = document.createElement('div')
+            x.className = 'experiment' + i;
+            x.id = '_vis_opt_exp_'+key+'_combi';
+
+            add_exp_type(x, exp);
+            add_exp_name(x, exp);
+            add_vars_no_camp_data(x, exp);
             expdiv.appendChild(x);
         }
     }
@@ -195,8 +296,30 @@ function add_experiments(experiments, campaignData){
 
         const resetRadio = document.querySelector('.resetToControl input');
         resetRadio.onclick = allExpToControl;
+
+        //Add preventDefault button
+
+        const prevDef = document.createElement('div');
+            prevDef.className = 'prevDef';
+            prevDef.innerHTML = '<span>Prevent Default </span>\
+                            <label class="control-switch"> \
+                            <input type="checkbox"> \
+                            <div class="slider round"></div> \
+                            </label>';
+
+        mainInfo.parentNode.insertBefore(prevDef, mainInfo.nextSibling);
+
+        const prevDefRadio = document.querySelector('.prevDef input');
+        prevDefRadio.onclick = prevDefault;
+        if(VWOData.CVPreventDefault){
+            document.querySelector('.prevDef input').checked = true;
+        }
+        else {
+            document.querySelector('.prevDef input').checked = false;
+        }
         expdiv.setAttribute('style', 'max-height:250px;overflow-y:scroll');
     }
+
     // chrome.browserAction.setBadgeText({text:''+i+''})
 }
 
@@ -263,6 +386,7 @@ function add_events_header(eventsElement){
         });
         chrome.storage.local.clear();
     }
+
     eventsElement.appendChild(garbageBin);
     // eventsElement.appendChild('<br>');
 }
@@ -324,7 +448,13 @@ function initVWO(data){
         const eventsElement = document.createElement('div');
         eventsElement.id = 'events';
 
-        mainInfoDiv.appendChild(header);
+        //mainInfoDiv.appendChild(header); 14-11-2017
+
+        var experimentsElementText = document.createElement('p');
+            experimentsElementText.className = 'experimentsElementText';
+            experimentsElementText.innerText = 'Active experiments';
+            app.appendChild(experimentsElementText);
+
         app.appendChild(experimentsElement);
         app.appendChild(eventsElement);
 
@@ -367,7 +497,7 @@ window.addEventListener('load', function(evt) {
 
 function getGoalInfo(testNum, goalNum){
     let goalData = VWOData.experiments;
-    if(goalData[testNum] != undefined){
+    if(goalData[testNum] != undefined && goalData[testNum].goals[goalNum] != undefined){
         var type = goalData[testNum].goals[goalNum].type;
         return goalData[testNum].name + ' Goal: ' + goalNum + " -- " + type;
     };

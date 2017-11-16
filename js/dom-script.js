@@ -23,6 +23,8 @@
     else if(window._vwo_code){
         VWOData.valid = 2;
     }
+    VWOData.CVPreventDefault = false;
+
     return VWOData
   }
 

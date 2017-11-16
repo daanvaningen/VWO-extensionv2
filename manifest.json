@@ -29,7 +29,8 @@
   "web_accessible_resources" : [
     "/js/dom-script.js",
     "/js/goals.js",
-    "/js/ajaxHook.js"
+    "/js/ajaxHook.js",
+    "/js/prevDefault.js"
   ],
 
   "content_scripts": [

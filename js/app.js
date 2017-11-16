@@ -8,7 +8,7 @@
 function reloadPage(){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {message: "Reload"})
-      });
+    });
 }
 
 function queryContentScript(callback){
@@ -21,6 +21,12 @@ function queryContentScript(callback){
 
 function openTab(){
     chrome.tabs.create({url:"http://www.clickvalue.nl"});
+}
+
+function prevDefault(){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {message: "prevDefault"});
+    });
 }
 // chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 //     queryContentScript(initVWO);

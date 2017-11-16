@@ -3,16 +3,26 @@
   min-height: 70px;
 }
 
+#info {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+  border-left: 3px solid green;
+}
+
 #info > div{
   text-align: center;
+  margin-left: 10px;
 }
 
 #info > img {
   height: 20px;
-  float:left;
+  float:right;
 }
 
 .ClickValue-link-title {
+  margin-top: 0px;
+  margin-bottom: 0px;
   color:black;
   font-size: 16px;
   font-weight: bold;
@@ -44,7 +54,7 @@
 
 .VWONotFound {
   text-align: center;
-  border-left: 5px solid red;
+  border-left: 3px solid red;
 }
 
 .mainInformation > .header > h1 {
@@ -60,18 +70,50 @@
   float left;
 }
 
+.experimentsElementText {
+  font-weight: bold;
+}
+
+.experiments > div[class^=extraInfo] {
+  margin-right: 8px;
+  margin-left: 3px;
+  background-color: #edeeef;
+  border-bottom: 1px solid #d6d6d6;
+}
+
+.experiments > div[class^=extraInfo] > div{
+  height: inherit;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top:5px;
+  border-right: 1px solid #d6d6d6;
+  display: inline-block;
+}
+
+.experiments > div[class^=extraInfo] > div:hover {
+  background-color: #f2f2f2;
+  cursor:pointer;
+}
+
+.experiments > div[class^=extraInfo] > div > img{
+  height: inherit;
+  height:20px;
+}
+
 .experiments > div[class^='exp'] {
   padding: 10px;
   margin-bottom: 10px;
+  margin-right:8px;
   border-left:3px solid #009fe3;
   border-width: 80%;
   background-color: #edeeef;
   font-weight: bold;
 }
 
+/*
 .experiments > div[class^='exp']:hover {
   background-color: #f2f2f2
-}
+}*/
 
 .experiments p {
   margin-top: 0px;
@@ -154,16 +196,48 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-.resetToControl {
-  text-align: center;
+.prevDef {
+  /*text-align: center;*/
+  background-color: #edeeef;
+  border-left: 3px solid green;
   margin-bottom: 5px;
   vertical-align: middle;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.prevDef > span {
+  font-size: 15px;
+  /*font-weight: bold;*/
+  padding-right: 3px;
+  padding-left: 10px;
+}
+
+.prevDef > label {
+  float: right;
+  margin-right: 5px;
+}
+
+.resetToControl {
+  /*text-align: center;*/
+  background-color: #edeeef;
+  border-left: 3px solid green;
+  margin-bottom: 5px;
+  vertical-align: middle;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .resetToControl > span {
   font-size: 15px;
-  font-weight: bold;
+  /*font-weight: bold;*/
   padding-right: 3px;
+  padding-left: 10px;
+}
+
+.resetToControl > label {
+  float: right;
+  margin-right: 5px;
 }
 
 .resetToControl label {
@@ -173,6 +247,7 @@ input:checked + .slider:before {
 #events {
   margin-top:.5em;
 }
+
 #events > p {
   width:90%;
   font-weight: bold;
@@ -202,6 +277,7 @@ input:checked + .slider:before {
   border-left: 3px solid #009fe3;
   padding: .5em;
   margin-bottom: .5em;
+  margin-right: 8px;
   cursor: pointer;
   background-color: #edeeef;
 }
@@ -209,6 +285,7 @@ input:checked + .slider:before {
 #eventsBox > div.hiddenInfoElem {
   border: 1px solid #009fe3;
   margin-bottom: .5em;
+  margin-right:8px;
   cursor: pointer;
   background-color: #edeeef;
   padding-bottom: 0.5em;
