@@ -189,7 +189,7 @@ function add_vars_no_camp_data(x, exp){
     x.appendChild(dropdown);
 }
 
-function createExtraInfoElem(expData, index){
+function createExtraInfoElem(index){
     var infoWrapper = document.createElement('div');
         infoWrapper.className = 'extraInfo' + index;
 
@@ -202,6 +202,7 @@ function createExtraInfoElem(expData, index){
 
     codeBox.onclick = function(currentIndex){
         return function(){
+            toggleVisibility(document.getElementById('editor'+currentIndex));
             var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
             var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
             for(var i = 0; i < infoElems.length; i++){
@@ -242,6 +243,19 @@ function createExtraInfoElem(expData, index){
     return infoWrapper;
 }
 
+function createEditorDiv(expData, index){
+    console.log(expData.sections[1].variations[2]);
+
+    //var js_beautify = require("beautify").js_beautify;
+
+    var editorDiv = document.createElement('div');
+        editorDiv.className = 'editor';
+        editorDiv.id = 'editor'+index;
+        editorDiv.style.display = 'none';
+
+    return editorDiv
+}
+
 /* Called by initVWO.
  * Sets up html elements to add experiment information, if any.
  */
@@ -253,7 +267,8 @@ function add_experiments(experiments, campaignData){
             i++;
             var exp = experiments[key];
             var campD = campaignData[key];
-            var extraInfo = createExtraInfoElem(exp, i);
+            var extraInfo = createExtraInfoElem(i);
+            var editorDiv = createEditorDiv(exp, i);
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
@@ -262,6 +277,11 @@ function add_experiments(experiments, campaignData){
             add_exp_name(x, exp);
             add_vars(x, exp, campD);
             expdiv.appendChild(extraInfo);
+            expdiv.appendChild(editorDiv);
+
+            var editor = ace.edit('editor'+i);
+            editor.setTheme('ace/theme/monokai')
+            editor.getSession().setMode("ace/mode/javascript");
             expdiv.appendChild(x);
         }
         else if(experiments.hasOwnProperty(key) && campaignData == undefined){
