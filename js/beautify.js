@@ -34,7 +34,10 @@
 
 */
 
-
+function js_beautify_trigger(js_source_text, options, callback){
+    var text = js_beautify(js_source_text, options);
+    callback(text);
+}
 
 function js_beautify(js_source_text, options) {
 

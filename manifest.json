@@ -41,6 +41,8 @@
     }
   ],
     "background": {
-    "scripts": ["./js/app.js"]
+    "scripts": ["./js/app.js",
+                "./js/beautify.js"
+                ]
   }
 }

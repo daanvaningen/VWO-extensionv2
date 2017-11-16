@@ -6,6 +6,7 @@
  * variations changes. Included bij main.html
  */
 
+//import * as js_beautify from 'js/beautify.js';
 /* Resets the current page and closes the current window after 1 sec.
  */
 function resetCollapse(){
@@ -119,9 +120,12 @@ function prevDefault(){
 
 
 function toggleVisibility(elem){
-    if(elem.style.display == 'none') elem.style.display = 'block';
-    else elem.style.display = 'none';
+    if(elem != undefined){
+        if(elem.style.display == 'none') elem.style.display = 'block';
+        else elem.style.display = 'none';
+    }
 }
+
 /* Called by add_experiments(). Adds experiment type information
  */
 function add_exp_type(x, obj){
@@ -224,7 +228,7 @@ function createExtraInfoElem(index){
             settingsBox.appendChild(imgSettingsIcon);
         infoWrapper.appendChild(settingsBox);
 
-    settingsBox.onclick = function(i){
+    settingsBox.onclick = function(currentIndex){
         return function(){
             var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
             var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
@@ -243,10 +247,9 @@ function createExtraInfoElem(index){
     return infoWrapper;
 }
 
-function createEditorDiv(expData, index){
-    console.log(expData.sections[1].variations[2]);
-
-    //var js_beautify = require("beautify").js_beautify;
+function createEditorDiv(index){
+    //console.log(js_beautify(expData.sections[1].variations[2]), {indent_size: 1, indent_char: '\t'});
+    //var js_beautify = require('js/beautify').js_beautify;
 
     var editorDiv = document.createElement('div');
         editorDiv.className = 'editor';
@@ -254,6 +257,36 @@ function createEditorDiv(expData, index){
         editorDiv.style.display = 'none';
 
     return editorDiv
+}
+
+function getRawExperimentCode(expData){
+    if(typeof(expData.sections[1].variations[2]) == 'string'){
+        return expData.sections[1].variations[2];
+    }
+    else if(typeof(expData.sections[1].variations[2]) == 'object'){
+        return expData.sections[1].variations[2][0].js;
+    }
+}
+function addEditor(expData, index){
+    var raw = getRawExperimentCode(expData);
+    console.log(raw);
+    console.log(raw.substring(raw.indexOf('>')+1));
+    var clean = raw.substring(raw.indexOf('>')+1);
+    // console.log(clean);
+    // var js = clean.substring(0, clean.indexOf('<\\/script'));
+    // console.log(js);
+
+    var editor = ace.edit('editor'+index);
+    editor.setTheme('ace/theme/monokai');
+    editor.getSession().setMode("ace/mode/javascript");
+    editor.setReadOnly(true);
+    editor.setValue(raw);
+    // chrome.runtime.getBackgroundPage(function(eventPage){
+    //     eventPage.js_beautify_trigger(js, {indent_size: 1, indent_char: '\t'}, prettyText);
+    // })
+    // function prettyText(text){
+    //     console.log(text)
+    // }
 }
 
 /* Called by initVWO.
@@ -268,7 +301,7 @@ function add_experiments(experiments, campaignData){
             var exp = experiments[key];
             var campD = campaignData[key];
             var extraInfo = createExtraInfoElem(i);
-            var editorDiv = createEditorDiv(exp, i);
+            var editorDiv = createEditorDiv(i);
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
@@ -278,10 +311,8 @@ function add_experiments(experiments, campaignData){
             add_vars(x, exp, campD);
             expdiv.appendChild(extraInfo);
             expdiv.appendChild(editorDiv);
+            addEditor(exp, i);
 
-            var editor = ace.edit('editor'+i);
-            editor.setTheme('ace/theme/monokai')
-            editor.getSession().setMode("ace/mode/javascript");
             expdiv.appendChild(x);
         }
         else if(experiments.hasOwnProperty(key) && campaignData == undefined){
