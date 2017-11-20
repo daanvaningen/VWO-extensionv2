@@ -267,11 +267,38 @@ function getRawExperimentCode(expData){
         return expData.sections[1].variations[2][0].js;
     }
 }
+
+function cleanExperimentCode(raw){
+  var resultcodes = ["", ""] //for js and css
+  var temp;
+  var indexClosingTag;
+
+  if(raw.indexOf('<script') == 0){ //clean layout
+    indexClosingTag = raw.indexOf('</script>')
+    temp = raw.substring(raw.indexOf('>')+1, indexClosingTag);
+    resultcodes[0] = temp;
+    console.log(temp);
+    //CSS
+    temp = raw.substring(indexClosingTag, raw.length);
+    indexClosingTag = temp.indexOf('</style>');
+    resultcodes[1] = temp.substring(temp.indexOf('style>')+6, indexClosingTag);
+  }
+  // chrome.runtime.getBackgroundPage(function(eventPage){
+  //     eventPage.js_beautify_trigger(js, {indent_size: 1, indent_char: '\t'}, prettyText);
+  // })
+  // function prettyText(text){
+  //     console.log(text)
+  // }
+
+
+  console.log(resultcodes);
+  return resultcodes;
+}
+
 function addEditor(expData, index){
     var raw = getRawExperimentCode(expData);
-    console.log(raw);
-    console.log(raw.substring(raw.indexOf('>')+1));
-    var clean = raw.substring(raw.indexOf('>')+1);
+
+    var clean = cleanExperimentCode(raw);
     // console.log(clean);
     // var js = clean.substring(0, clean.indexOf('<\\/script'));
     // console.log(js);
@@ -280,13 +307,8 @@ function addEditor(expData, index){
     editor.setTheme('ace/theme/monokai');
     editor.getSession().setMode("ace/mode/javascript");
     editor.setReadOnly(true);
-    editor.setValue(raw);
-    // chrome.runtime.getBackgroundPage(function(eventPage){
-    //     eventPage.js_beautify_trigger(js, {indent_size: 1, indent_char: '\t'}, prettyText);
-    // })
-    // function prettyText(text){
-    //     console.log(text)
-    // }
+    editor.setValue(clean[0]);
+
 }
 
 /* Called by initVWO.
