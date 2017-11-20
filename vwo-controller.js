@@ -334,12 +334,14 @@ function addEditor(expData, index){
       editor.getSession().setMode("ace/mode/javascript");
       editor.setReadOnly(true);
       editor.setValue(clean[0]);
+      editor.selection.moveCursorFileStart();
 
     var editor = ace.edit('editorCSS'+index);
       editor.setTheme('ace/theme/monokai');
       editor.getSession().setMode("ace/mode/css");
       editor.setReadOnly(true);
       editor.setValue(clean[1]);
+      editor.selection.moveCursorFileStart();
 }
 
 /* Called by initVWO.
