@@ -307,9 +307,18 @@ input:checked + .slider:before {
 
 .editor {
   display: none;
-  height: 250px;
-  max-height: 250px;
+  height: 200px;
+  max-height: 200px;
   max-width: 400px;
   margin-left: 3px;
   margin-right: 8px;
+  overflow-x: scroll;
+}
+
+.ace_gutter {
+  display: none !important;
+}
+
+.ace_scroller {
+  left: 0 !important;
 }

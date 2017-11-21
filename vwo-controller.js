@@ -269,18 +269,19 @@ function getRawExperimentCode(expData){
 }
 function addEditor(expData, index){
     var raw = getRawExperimentCode(expData);
-    console.log(raw);
-    console.log(raw.substring(raw.indexOf('>')+1));
     var clean = raw.substring(raw.indexOf('>')+1);
     // console.log(clean);
-    // var js = clean.substring(0, clean.indexOf('<\\/script'));
+    console.log(clean[clean.lastIndexOf('/script>') - 1]);
+    console.log(clean[clean.lastIndexOf('/script>') - 1] == '\\');
+
+    var js = clean.substring(0, clean.lastIndexOf('/script>') - 1);
     // console.log(js);
 
     var editor = ace.edit('editor'+index);
     editor.setTheme('ace/theme/monokai');
     editor.getSession().setMode("ace/mode/javascript");
     editor.setReadOnly(true);
-    editor.setValue(raw);
+    editor.setValue(js);
     // chrome.runtime.getBackgroundPage(function(eventPage){
     //     eventPage.js_beautify_trigger(js, {indent_size: 1, indent_char: '\t'}, prettyText);
     // })
