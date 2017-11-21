@@ -1,5 +1,5 @@
 #app {
-  min-width: 400px;
+  min-width: 500px;
   min-height: 70px;
 }
 
@@ -307,18 +307,25 @@ input:checked + .slider:before {
 
 .editor {
   display: none;
-  height: 200px;
-  max-height: 200px;
-  max-width: 400px;
+  height: 220px;
+  max-height: 220px !important;
+  max-width: 500px;
   margin-left: 3px;
   margin-right: 8px;
   overflow-x: scroll;
 }
 
-.ace_gutter {
-  display: none !important;
-}
-
+/*
 .ace_scroller {
   left: 0 !important;
 }
+
+
+.editor .ace_gutter {
+  width:30px !important;
+}
+
+.editor .ace_gutter .ace_gutter-cell {
+  padding-left: 0px;
+  padding-right: 0px;
+}*/

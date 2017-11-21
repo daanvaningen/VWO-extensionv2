@@ -200,13 +200,40 @@ function createExtraInfoElem(index){
     var codeBox = document.createElement('div');
         codeBox.className = 'codeIcon';
         var imgCodeIcon = document.createElement('img');
-            imgCodeIcon.setAttribute('src', 'img/codeicon.png')
+            imgCodeIcon.setAttribute('src', 'img/javascripticon.png')
             codeBox.appendChild(imgCodeIcon);
         infoWrapper.appendChild(codeBox);
 
     codeBox.onclick = function(currentIndex){
         return function(){
-            toggleVisibility(document.getElementById('editor'+currentIndex));
+            document.getElementById('editorCSS'+currentIndex).style.display = 'none';
+            toggleVisibility(document.getElementById('editorJS'+currentIndex));
+            var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
+            var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
+            for(var i = 0; i < infoElems.length; i++){
+                if(i == currentIndex - 1){
+                    toggleVisibility(expElems[i]);
+                }
+                else {
+                    toggleVisibility(expElems[i]);
+                    toggleVisibility(infoElems[i]);
+                }
+            }
+        }
+    }(index)
+
+
+    var codeBoxCSS = document.createElement('div');
+        codeBoxCSS.className = 'codeIconCSS';
+        var imgCodeIconCSS = document.createElement('img');
+            imgCodeIconCSS.setAttribute('src', 'img/cssicon.png')
+            codeBoxCSS.appendChild(imgCodeIconCSS);
+        infoWrapper.appendChild(codeBoxCSS);
+
+    codeBoxCSS.onclick = function(currentIndex){
+        return function(){
+            document.getElementById('editorJS'+currentIndex).style.display = 'none';
+            toggleVisibility(document.getElementById('editorCSS'+currentIndex));
             var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
             var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
             for(var i = 0; i < infoElems.length; i++){
@@ -247,13 +274,13 @@ function createExtraInfoElem(index){
     return infoWrapper;
 }
 
-function createEditorDiv(index){
+function createEditorDiv(index, type){
     //console.log(js_beautify(expData.sections[1].variations[2]), {indent_size: 1, indent_char: '\t'});
     //var js_beautify = require('js/beautify').js_beautify;
 
     var editorDiv = document.createElement('div');
         editorDiv.className = 'editor';
-        editorDiv.id = 'editor'+index;
+        editorDiv.id = 'editor'+type+index;
         editorDiv.style.display = 'none';
 
     return editorDiv
@@ -267,27 +294,77 @@ function getRawExperimentCode(expData){
         return expData.sections[1].variations[2][0].js;
     }
 }
+
+function cleanExperimentCode(raw){
+  var resultcodes = ["", ""] //for js and css
+  var tempJS;
+  var tempCSS;
+  var indexClosingTag;
+  var callback = false;
+  var callbackDoneJS = false;
+  var callbackDoneCSS = false;
+
+  if(raw.indexOf('<script') == 0){ //clean layout
+    indexClosingTag = raw.indexOf('</script>');
+    tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
+    resultcodes[0] = tempJS;
+    //CSS
+    tempCSS = raw.substring(indexClosingTag, raw.length);
+    indexClosingTag = tempCSS.indexOf('</style>');
+    resultcodes[1] = tempCSS.substring(tempCSS.indexOf('style>')+6, indexClosingTag);
+  }
+  else { //dirty shizzle
+    callback = true;
+    indexClosingTag = raw.indexOf('<\\/script>');
+    tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
+    tempJS = tempJS.replace(/\\n/g, '');
+
+    chrome.runtime.getBackgroundPage(function(eventPage){
+      eventPage.js_beautify_trigger(tempJS, {indent_size: 2, indent_char: '\t'}, prettyText);
+    })
+    function prettyText(text){
+      console.log(text);
+      resultcodes[0] = text;
+      callbackDoneJS = true;
+    }
+
+    //CSS
+    tempCSS = raw.substring(indexClosingTag, raw.length);
+    indexClosingTag = tempCSS.indexOf('<\\/style>');
+    resultcodes[1] = tempCSS.substring(tempCSS.indexOf('style>')+6, indexClosingTag);
+  }
+
+  if(!callback) return resultcodes;
+  else {
+    var d = window.setInterval(function(){
+      if(callbackDoneJS){
+        clearInterval(d);
+        console.log(resultcodes);
+
+        return resultcodes;
+      }
+    }, 100);
+  }
+  // return resultcodes;
+}
+
 function addEditor(expData, index){
     var raw = getRawExperimentCode(expData);
-    var clean = raw.substring(raw.indexOf('>')+1);
-    // console.log(clean);
-    console.log(clean[clean.lastIndexOf('/script>') - 1]);
-    console.log(clean[clean.lastIndexOf('/script>') - 1] == '\\');
+    var clean = cleanExperimentCode(raw) || ["", ""];
+    console.log(clean);
+    var editor = ace.edit('editorJS'+index);
+      editor.setTheme('ace/theme/monokai');
+      editor.getSession().setMode("ace/mode/javascript");
+      editor.setReadOnly(true);
+      editor.setValue(clean[0]);
+      editor.selection.moveCursorFileStart();
 
-    var js = clean.substring(0, clean.lastIndexOf('/script>') - 1);
-    // console.log(js);
-
-    var editor = ace.edit('editor'+index);
-    editor.setTheme('ace/theme/monokai');
-    editor.getSession().setMode("ace/mode/javascript");
-    editor.setReadOnly(true);
-    editor.setValue(js);
-    // chrome.runtime.getBackgroundPage(function(eventPage){
-    //     eventPage.js_beautify_trigger(js, {indent_size: 1, indent_char: '\t'}, prettyText);
-    // })
-    // function prettyText(text){
-    //     console.log(text)
-    // }
+    var editor = ace.edit('editorCSS'+index);
+      editor.setTheme('ace/theme/monokai');
+      editor.getSession().setMode("ace/mode/css");
+      editor.setReadOnly(true);
+      editor.setValue(clean[1]);
+      editor.selection.moveCursorFileStart();
 }
 
 /* Called by initVWO.
@@ -302,7 +379,8 @@ function add_experiments(experiments, campaignData){
             var exp = experiments[key];
             var campD = campaignData[key];
             var extraInfo = createExtraInfoElem(i);
-            var editorDiv = createEditorDiv(i);
+            var editorDivJS = createEditorDiv(i, 'JS');
+            var editorDivCSS = createEditorDiv(i, 'CSS');
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
@@ -311,7 +389,8 @@ function add_experiments(experiments, campaignData){
             add_exp_name(x, exp);
             add_vars(x, exp, campD);
             expdiv.appendChild(extraInfo);
-            expdiv.appendChild(editorDiv);
+            expdiv.appendChild(editorDivJS);
+            expdiv.appendChild(editorDivCSS);
             addEditor(exp, i);
 
             expdiv.appendChild(x);
