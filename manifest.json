@@ -42,7 +42,8 @@
   ],
     "background": {
     "scripts": ["./js/app.js",
-                "./js/beautify.js"
+                "./js/beautify.js",
+                "./js/beautifyCSS.js"
                 ]
   }
 }

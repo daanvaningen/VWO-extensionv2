@@ -206,19 +206,19 @@ function createExtraInfoElem(index){
 
     codeBox.onclick = function(currentIndex){
         return function(){
-            document.getElementById('editorCSS'+currentIndex).style.display = 'none';
+            // document.getElementById('editorCSS'+currentIndex).style.display = 'none';
             toggleVisibility(document.getElementById('editorJS'+currentIndex));
-            var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
-            var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
-            for(var i = 0; i < infoElems.length; i++){
-                if(i == currentIndex - 1){
-                    toggleVisibility(expElems[i]);
-                }
-                else {
-                    toggleVisibility(expElems[i]);
-                    toggleVisibility(infoElems[i]);
-                }
-            }
+            // var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
+            // var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
+            // for(var i = 0; i < infoElems.length; i++){
+            //     if(i == currentIndex - 1){
+            //         toggleVisibility(expElems[i]);
+            //     }
+            //     else {
+            //         toggleVisibility(expElems[i]);
+            //         toggleVisibility(infoElems[i]);
+            //     }
+            // }
         }
     }(index)
 
@@ -232,22 +232,23 @@ function createExtraInfoElem(index){
 
     codeBoxCSS.onclick = function(currentIndex){
         return function(){
-            document.getElementById('editorJS'+currentIndex).style.display = 'none';
+            //document.getElementById('editorJS'+currentIndex).style.display = 'none';
             toggleVisibility(document.getElementById('editorCSS'+currentIndex));
-            var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
-            var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
-            for(var i = 0; i < infoElems.length; i++){
-                if(i == currentIndex - 1){
-                    toggleVisibility(expElems[i]);
-                }
-                else {
-                    toggleVisibility(expElems[i]);
-                    toggleVisibility(infoElems[i]);
-                }
-            }
+            // var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
+            // var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
+            // for(var i = 0; i < infoElems.length; i++){
+            //     if(i == currentIndex - 1){
+            //         toggleVisibility(expElems[i]);
+            //     }
+            //     else {
+            //         toggleVisibility(expElems[i]);
+            //         toggleVisibility(infoElems[i]);
+            //     }
+            // }
         }
     }(index)
 
+/*
     var settingsBox = document.createElement('div');
         settingsBox.className = 'settingsIcon';
         var imgSettingsIcon = document.createElement('img');
@@ -269,15 +270,12 @@ function createExtraInfoElem(index){
                 }
             }
         }
-    }(index)
+    }(index)*/
 
     return infoWrapper;
 }
 
 function createEditorDiv(index, type){
-    //console.log(js_beautify(expData.sections[1].variations[2]), {indent_size: 1, indent_char: '\t'});
-    //var js_beautify = require('js/beautify').js_beautify;
-
     var editorDiv = document.createElement('div');
         editorDiv.className = 'editor';
         editorDiv.id = 'editor'+type+index;
@@ -286,85 +284,118 @@ function createEditorDiv(index, type){
     return editorDiv
 }
 
-function getRawExperimentCode(expData){
-    if(typeof(expData.sections[1].variations[2]) == 'string'){
-        return expData.sections[1].variations[2];
+function getRawExperimentCode(expData, index){
+    var e = document.querySelector('.experiment'+index+' > select');
+    var value = parseInt(e.options[e.selectedIndex].value);
+    console.log(value);
+    if(typeof(expData.sections[1].variations[value]) == 'string'){
+        return expData.sections[1].variations[value];
     }
-    else if(typeof(expData.sections[1].variations[2]) == 'object'){
-        return expData.sections[1].variations[2][0].js;
+    else if(typeof(expData.sections[1].variations[value]) == 'object'){
+        if(expData.sections[1].variations[value][0] == 'object'){
+            return expData.sections[1].variations[value][0].js;
+        }
     }
+    return '';
 }
 
-function cleanExperimentCode(raw){
-  var resultcodes = ["", ""] //for js and css
-  var tempJS;
-  var tempCSS;
-  var indexClosingTag;
-  var callback = false;
-  var callbackDoneJS = false;
-  var callbackDoneCSS = false;
+function cleanSpecialCodeChars(codeString){
+    var temp = codeString;
+    temp = temp.replace(/(\\n|\\t)/g, '');
+    temp = temp.replace(/\\\//g, '/');
+    temp = temp.replace(/\\"/g, '"');
 
-  if(raw.indexOf('<script') == 0){ //clean layout
-    indexClosingTag = raw.indexOf('</script>');
-    tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
-    resultcodes[0] = tempJS;
-    //CSS
-    tempCSS = raw.substring(indexClosingTag, raw.length);
-    indexClosingTag = tempCSS.indexOf('</style>');
-    resultcodes[1] = tempCSS.substring(tempCSS.indexOf('style>')+6, indexClosingTag);
-  }
-  else { //dirty shizzle
-    callback = true;
-    indexClosingTag = raw.indexOf('<\\/script>');
-    tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
-    tempJS = tempJS.replace(/\\n/g, '');
-
-    chrome.runtime.getBackgroundPage(function(eventPage){
-      eventPage.js_beautify_trigger(tempJS, {indent_size: 2, indent_char: '\t'}, prettyText);
-    })
-    function prettyText(text){
-      console.log(text);
-      resultcodes[0] = text;
-      callbackDoneJS = true;
-    }
-
-    //CSS
-    tempCSS = raw.substring(indexClosingTag, raw.length);
-    indexClosingTag = tempCSS.indexOf('<\\/style>');
-    resultcodes[1] = tempCSS.substring(tempCSS.indexOf('style>')+6, indexClosingTag);
-  }
-
-  if(!callback) return resultcodes;
-  else {
-    var d = window.setInterval(function(){
-      if(callbackDoneJS){
-        clearInterval(d);
-        console.log(resultcodes);
-
-        return resultcodes;
-      }
-    }, 100);
-  }
-  // return resultcodes;
+    return temp
 }
+
 
 function addEditor(expData, index){
-    var raw = getRawExperimentCode(expData);
-    var clean = cleanExperimentCode(raw) || ["", ""];
-    console.log(clean);
-    var editor = ace.edit('editorJS'+index);
-      editor.setTheme('ace/theme/monokai');
-      editor.getSession().setMode("ace/mode/javascript");
-      editor.setReadOnly(true);
-      editor.setValue(clean[0]);
-      editor.selection.moveCursorFileStart();
+    var raw = getRawExperimentCode(expData, index);
+    // var clean = cleanExperimentCode(raw) || ["", ""];
+    var clean = new Promise((resolve, reject) => {
+        var resultcodes = ["", ""] //for js and css
+        var tempJS;
+        var tempCSS;
+        var indexClosingTag;
+        var callbackJS = false;
+        var callbackCSS = false;
+        var callbackDoneJS = false;
+        var callbackDoneCSS = false;
 
-    var editor = ace.edit('editorCSS'+index);
-      editor.setTheme('ace/theme/monokai');
-      editor.getSession().setMode("ace/mode/css");
-      editor.setReadOnly(true);
-      editor.setValue(clean[1]);
-      editor.selection.moveCursorFileStart();
+        if(raw.indexOf('<script') == 0){ //clean layout
+          indexClosingTag = raw.indexOf('</script>');
+          if(indexClosingTag > -1){
+              tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
+              resultcodes[0] = tempJS;
+          }
+          //CSS
+          indexClosingTag = raw.indexOf('</style>');
+          if(indexClosingTag > -1){
+              resultcodes[1] = raw.substring(raw.indexOf('style>')+6, indexClosingTag);
+          }
+        }
+        else { //dirty shizzle
+          indexClosingTag = raw.indexOf('<\\/script>');
+          if(indexClosingTag > -1){
+              callbackJS = true;
+              tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
+              tempJS = cleanSpecialCodeChars(tempJS)
+
+              chrome.runtime.getBackgroundPage(function(eventPage){
+                eventPage.js_beautify_trigger(tempJS, {indent_size: 1, indent_char: '\t'}, prettyTextJS);
+              })
+              function prettyTextJS(text){
+                resultcodes[0] = text;
+                callbackDoneJS = true;
+              }
+          }
+          //CSS
+          indexClosingTag = raw.indexOf('<\\/style>');
+          if(indexClosingTag > -1){
+              callbackCSS = true;
+              tempCSS = raw.substring(raw.indexOf('style>')+6, indexClosingTag);
+              tempCSS = cleanSpecialCodeChars(tempCSS);
+
+              chrome.runtime.getBackgroundPage(function(eventPage){
+                  eventPage.beautifyCSS_trigger(tempCSS, prettyTextCSS);
+              })
+              function prettyTextCSS(text){
+                  resultcodes[1] = text;
+                  callbackDoneCSS = true;
+              }
+
+          }
+        }
+
+        if(!callbackJS && !callbackCSS) resolve(resultcodes);
+        else {
+          var d = window.setInterval(function(){
+            if(callbackDoneJS && callbackDoneCSS){
+              clearInterval(d);
+              resolve(resultcodes);
+            }
+          }, 100);
+        }
+    })
+
+    clean.then((resultCodes) => {
+        var editor = ace.edit('editorJS'+index);
+          editor.setTheme('ace/theme/monokai');
+          editor.getSession().setMode("ace/mode/javascript");
+          editor.setReadOnly(true);
+          editor.setValue(resultCodes[0]);
+          // editor.setOption('wrap', 60);
+          // editor.getSession().setUseWrapMode(true);
+          editor.selection.moveCursorFileStart();
+
+        var editor = ace.edit('editorCSS'+index);
+          editor.setTheme('ace/theme/monokai');
+          editor.getSession().setMode("ace/mode/css");
+          editor.setReadOnly(true);
+          editor.setValue(resultCodes[1]);
+          // editor.setOption('wrap', 60);
+          editor.selection.moveCursorFileStart();
+    })
 }
 
 /* Called by initVWO.
@@ -391,9 +422,9 @@ function add_experiments(experiments, campaignData){
             expdiv.appendChild(extraInfo);
             expdiv.appendChild(editorDivJS);
             expdiv.appendChild(editorDivCSS);
+            expdiv.appendChild(x);
             addEditor(exp, i);
 
-            expdiv.appendChild(x);
         }
         else if(experiments.hasOwnProperty(key) && campaignData == undefined){
             i++;
