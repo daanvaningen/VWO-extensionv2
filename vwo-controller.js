@@ -202,6 +202,10 @@ function createExtraInfoElem(index){
         var imgCodeIcon = document.createElement('img');
             imgCodeIcon.setAttribute('src', 'img/javascripticon.png')
             codeBox.appendChild(imgCodeIcon);
+        var hoverTextJS = document.createElement('span');
+            hoverTextJS.className = 'tooltipText';
+            hoverTextJS.innerText = 'JavaScript';
+            codeBox.appendChild(hoverTextJS);
         infoWrapper.appendChild(codeBox);
 
     codeBox.onclick = function(currentIndex){
@@ -228,6 +232,10 @@ function createExtraInfoElem(index){
         var imgCodeIconCSS = document.createElement('img');
             imgCodeIconCSS.setAttribute('src', 'img/cssicon.png')
             codeBoxCSS.appendChild(imgCodeIconCSS);
+        var hoverTextCSS = document.createElement('span');
+            hoverTextCSS.className = 'tooltipText';
+            hoverTextCSS.innerText = 'CSS';
+            codeBoxCSS.appendChild(hoverTextCSS);
         infoWrapper.appendChild(codeBoxCSS);
 
     codeBoxCSS.onclick = function(currentIndex){
@@ -248,6 +256,63 @@ function createExtraInfoElem(index){
         }
     }(index)
 
+    var goalsBox = document.createElement('div');
+        goalsBox.className = 'goalsIcon';
+        var imgGoalsIcon = document.createElement('img');
+            imgGoalsIcon.setAttribute('src', 'img/goalsicon.png')
+            goalsBox.appendChild(imgGoalsIcon);
+        var hoverTextGoals = document.createElement('span');
+            hoverTextGoals.className = 'tooltipText';
+            hoverTextGoals.innerText = 'Goals';
+            goalsBox.appendChild(hoverTextGoals);
+        infoWrapper.appendChild(goalsBox);
+
+    goalsBox.onclick = function(currentIndex){
+        return function(){
+            //document.getElementById('editorJS'+currentIndex).style.display = 'none';
+            toggleVisibility(document.getElementById('goalsList'+currentIndex));
+            // var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
+            // var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
+            // for(var i = 0; i < infoElems.length; i++){
+            //     if(i == currentIndex - 1){
+            //         toggleVisibility(expElems[i]);
+            //     }
+            //     else {
+            //         toggleVisibility(expElems[i]);
+            //         toggleVisibility(infoElems[i]);
+            //     }
+            // }
+        }
+    }(index)
+/*
+    var codeBoxGlobal = document.createElement('div');
+        codeBoxGlobal.className = 'codeIconGlobal';
+        var imgCodeIconGlobal = document.createElement('img');
+            imgCodeIconGlobal.setAttribute('src', 'img/globalicon.png')
+            codeBoxGlobal.appendChild(imgCodeIconGlobal);
+        var hoverTextGlobal = document.createElement('span');
+            hoverTextGlobal.className = 'tooltipText';
+            hoverTextGlobal.innerText = 'Global';
+            codeBoxGlobal.appendChild(hoverTextGlobal);
+        infoWrapper.appendChild(codeBoxGlobal);
+
+    codeBoxGlobal.onclick = function(currentIndex){
+        return function(){
+            //document.getElementById('editorJS'+currentIndex).style.display = 'none';
+            toggleVisibility(document.getElementById('editorGlobal'+currentIndex));
+            // var infoElems = document.querySelectorAll('.experiments > div[class^="extraInfo"]');
+            // var expElems = document.querySelectorAll('.experiments > div[class^="experiment"]');
+            // for(var i = 0; i < infoElems.length; i++){
+            //     if(i == currentIndex - 1){
+            //         toggleVisibility(expElems[i]);
+            //     }
+            //     else {
+            //         toggleVisibility(expElems[i]);
+            //         toggleVisibility(infoElems[i]);
+            //     }
+            // }
+        }
+    }(index)*/
 /*
     var settingsBox = document.createElement('div');
         settingsBox.className = 'settingsIcon';
@@ -275,6 +340,13 @@ function createExtraInfoElem(index){
     return infoWrapper;
 }
 
+function createGoalsDiv(expData, index){
+    console.log(expData);
+    var goalsDiv = document.createElement('div');
+        goalsDiv.className = 'goalsList'+index;
+        goalsDiv.style.display = 'none';
+}
+
 function createEditorDiv(index, type){
     var editorDiv = document.createElement('div');
         editorDiv.className = 'editor';
@@ -287,7 +359,6 @@ function createEditorDiv(index, type){
 function getRawExperimentCode(expData, index){
     var e = document.querySelector('.experiment'+index+' > select');
     var value = parseInt(e.options[e.selectedIndex].value);
-    console.log(value);
     if(typeof(expData.sections[1].variations[value]) == 'string'){
         return expData.sections[1].variations[value];
     }
@@ -311,9 +382,9 @@ function cleanSpecialCodeChars(codeString){
 
 function addEditor(expData, index){
     var raw = getRawExperimentCode(expData, index);
-    // var clean = cleanExperimentCode(raw) || ["", ""];
+    /*var globalJS = */
     var clean = new Promise((resolve, reject) => {
-        var resultcodes = ["", ""] //for js and css
+        var resultcodes = ["", ""] //for js, css and globalJS
         var tempJS;
         var tempCSS;
         var indexClosingTag;
@@ -412,6 +483,9 @@ function add_experiments(experiments, campaignData){
             var extraInfo = createExtraInfoElem(i);
             var editorDivJS = createEditorDiv(i, 'JS');
             var editorDivCSS = createEditorDiv(i, 'CSS');
+            var goalsDiv = createGoalsDiv(exp, i);
+
+            // var editorDivGlobal = createEditorDiv(i, 'JS');
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
@@ -422,6 +496,8 @@ function add_experiments(experiments, campaignData){
             expdiv.appendChild(extraInfo);
             expdiv.appendChild(editorDivJS);
             expdiv.appendChild(editorDivCSS);
+            // expdiv.appendChild(editorDivGlobal);
+            expdiv.appendChild(goalsDiv);
             expdiv.appendChild(x);
             addEditor(exp, i);
 

@@ -26,7 +26,7 @@
   color:black;
   font-size: 16px;
   font-weight: bold;
-  text-decoration: underline;
+  /*text-decoration: underline*/;
 }
 
 .ClickValue-link-title:hover {
@@ -35,13 +35,13 @@
 }
 #info > .infoText {
     visibility: hidden;
-    width: 350px;
-    background-color: #edeeef;
-    color: #009fe3;
+    width: 446px;
+    background-color: black;
+    color: #fff;
     text-align: center;
     border-radius: 6px;
     padding: 15px 15px;
-    float: left;
+    float: right;
 
     /* Position the tooltip */
     position: absolute;
@@ -82,6 +82,7 @@
 }
 
 .experiments > div[class^=extraInfo] > div{
+  position: relative;
   height: inherit;
   padding-left: 5px;
   padding-right: 5px;
@@ -315,17 +316,22 @@ input:checked + .slider:before {
   overflow-x: scroll;
 }
 
-/*
-.ace_scroller {
-  left: 0 !important;
+.tooltipText {
+  visibility: hidden;
+  width: 80px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 3px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
 }
 
-
-.editor .ace_gutter {
-  width:30px !important;
+div[class^="extraInfo"] div:hover > .tooltipText {
+  visibility: visible;
+  top:100%;
+  left:50%;
 }
-
-.editor .ace_gutter .ace_gutter-cell {
-  padding-left: 0px;
-  padding-right: 0px;
-}*/
