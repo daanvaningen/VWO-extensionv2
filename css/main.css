@@ -359,11 +359,29 @@ input:checked + .slider:before {
 
   /* Position the tooltip */
   position: absolute;
-  z-index: 1;
+  z-index: 100;
 }
 
 div[class^="extraInfo"] div:hover > .tooltipText {
   visibility: visible;
   top:100%;
   left:50%;
+}
+
+div[id^="goalsList"] {
+  /*background-color: #edeeef;*/
+  margin-left: 3px;
+  margin-right: 8px;
+}
+
+div[id^="goalsList"] > table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+div[id^="goalsList"] > table td, div[id^="goalsList"] > table th {
+  border: 1px solid #d6d6d6;
+  text-align: left;
+  padding-left: 3px;
+  padding-right: 3px;
 }

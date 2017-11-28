@@ -341,10 +341,34 @@ function createExtraInfoElem(index){
 }
 
 function createGoalsDiv(expData, index){
-    console.log(expData);
+    var goalsObj = expData.goals;
+    // console.log(goalsObj, typeof(goalsObj));
+    var temp = ""
+    var goalNum, goalType, goalTrigger;
+    for(key in goalsObj){
+        goalNum = key;
+        goalType = goalsObj[key].type;
+        goalTrigger = goalsObj[key].url || goalsObj[key].pUrl
+        temp += `<tr>
+        <td>${goalNum}</td>
+        <td>${goalType}</td>
+        <td>${goalTrigger}</td>
+        </tr>`
+    }
+
     var goalsDiv = document.createElement('div');
-        goalsDiv.className = 'goalsList'+index;
+        goalsDiv.id = 'goalsList'+index;
         goalsDiv.style.display = 'none';
+
+    goalsDiv.innerHTML = `<table>
+                            <tr>
+                                <th>#</th>
+                                <th>Type</th>
+                                <th>Goal Trigger</th>
+                            </tr>
+                            ${temp}
+                        </table>`
+    return goalsDiv;
 }
 
 function createEditorDiv(index, type){
@@ -375,6 +399,8 @@ function cleanSpecialCodeChars(codeString){
     temp = temp.replace(/(\\n|\\t)/g, '');
     temp = temp.replace(/\\\//g, '/');
     temp = temp.replace(/\\"/g, '"');
+    //https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline
+    temp = temp.replace(/(\/\*[\w\'\s\r\n\*]*\*\/)|(\/\/[\w\s\']*)|(\<![\-\-\s\w\>\/]*\>)/g, '');
 
     return temp
 }
@@ -486,7 +512,7 @@ function add_experiments(experiments, campaignData){
             var extraInfo = createExtraInfoElem(i);
             var editorDivJS = createEditorDiv(i, 'JS');
             var editorDivCSS = createEditorDiv(i, 'CSS');
-            // var goalsDiv = createGoalsDiv(exp, i);
+            var goalsDiv = createGoalsDiv(exp, i);
 
             // var editorDivGlobal = createEditorDiv(i, 'JS');
             var x = document.createElement('div')
@@ -500,14 +526,17 @@ function add_experiments(experiments, campaignData){
             expdiv.appendChild(editorDivJS);
             expdiv.appendChild(editorDivCSS);
             // expdiv.appendChild(editorDivGlobal);
-            // expdiv.appendChild(goalsDiv);
+            expdiv.appendChild(goalsDiv);
             expdiv.appendChild(x);
             addEditor(exp, i);
-
         }
         else if(experiments.hasOwnProperty(key) && campaignData == undefined){
             i++;
             var exp = experiments[key];
+            var extraInfo = createExtraInfoElem(i);
+            var editorDivJS = createEditorDiv(i, 'JS');
+            var editorDivCSS = createEditorDiv(i, 'CSS');
+            var goalsDiv = createGoalsDiv(exp, i);
             var x = document.createElement('div')
             x.className = 'experiment' + i;
             x.id = '_vis_opt_exp_'+key+'_combi';
@@ -515,7 +544,12 @@ function add_experiments(experiments, campaignData){
             add_exp_type(x, exp);
             add_exp_name(x, exp);
             add_vars_no_camp_data(x, exp);
+            expdiv.appendChild(extraInfo);
+            expdiv.appendChild(editorDivJS);
+            expdiv.appendChild(editorDivCSS);
+            expdiv.appendChild(goalsDiv);
             expdiv.appendChild(x);
+            addEditor(exp, i);
         }
     }
     if(i == 0){ // No experiments
@@ -561,7 +595,7 @@ function add_experiments(experiments, campaignData){
         expdiv.setAttribute('style', 'max-height:250px;overflow-y:scroll');
     }
 
-    chrome.browserAction.setBadgeText({text:''+i+''})
+    document.querySelector('.experimentsElementText').innerText += ` (${i})`;
 }
 
 
@@ -755,7 +789,7 @@ function getGoalInfo(testNum, goalNum){
     let goalData = VWOData.experiments;
     if(goalData[testNum] != undefined && goalData[testNum].goals[goalNum] != undefined){
         var type = goalData[testNum].goals[goalNum].type;
-        return goalData[testNum].name + ' Goal: ' + goalNum + " -- " + type;
+        return goalData[testNum].name + ' -- Goal: ' + goalNum + " -- " + type;
     };
     return '';
 }
