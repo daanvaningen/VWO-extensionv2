@@ -1,0 +1,387 @@
+#app {
+  min-width: 500px;
+  min-height: 70px;
+}
+
+#info {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+  border-left: 3px solid green;
+}
+
+#info > div{
+  text-align: center;
+  margin-left: 10px;
+}
+
+#info > img {
+  height: 20px;
+  float:right;
+}
+
+.ClickValue-link-title {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  color:black;
+  font-size: 16px;
+  font-weight: bold;
+  /*text-decoration: underline*/;
+}
+
+.ClickValue-link-title:hover {
+  cursor: pointer;
+}
+
+#info > img:hover {
+  cursor: pointer;
+}
+
+#description {
+  border-left: 3px solid #009fe3;
+  min-width: 500px;
+  display: none;
+  padding-left: 10px;
+}
+
+#description > span:nth-of-type(1) {
+  font-size: 14px;
+}
+
+#description > span {
+  font-size: 12px;
+}
+
+#description > span.infoText {
+  display: block;
+  margin-left: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#description > .infoTextHeader {
+  margin-top:
+  font-size: 14px;
+  color: #009fe3
+}
+
+#description > p.infoTextHeader {
+  font-weight: bold;
+  font-size: 16px;
+  color: #009fe3;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+#description img {
+  height:20px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+#description > div.imgTextWrapper {
+  /*margin-top: 15px;*/
+}
+
+.VWONotFound {
+  text-align: center;
+  border-left: 3px solid red;
+  padding-left: 10px;
+}
+
+.mainInformation > .header > h1 {
+  margin-top: 5px;
+}
+
+.mainInformation {
+  text-align: center;
+  border-left: 3px solid green;
+}
+
+.accountID, userID {
+  float left;
+}
+
+.experimentsElementText {
+  font-weight: bold;
+}
+
+.experiments > div[class^=extraInfo] {
+  margin-right: 8px;
+  margin-left: 3px;
+  background-color: #edeeef;
+  border-bottom: 1px solid #d6d6d6;
+}
+
+.experiments > div[class^=extraInfo] > div{
+  position: relative;
+  height: inherit;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top:5px;
+  border-right: 1px solid #d6d6d6;
+  display: inline-block;
+}
+
+.experiments > div[class^=extraInfo] > div:hover {
+  background-color: #f2f2f2;
+  cursor:pointer;
+}
+
+.experiments > div[class^=extraInfo] > div > img{
+  height: inherit;
+  height:20px;
+}
+
+.experiments > div[class^='exp'] {
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-right:8px;
+  border-left:3px solid #009fe3;
+  border-width: 80%;
+  background-color: #edeeef;
+  font-weight: bold;
+}
+
+/*
+.experiments > div[class^='exp']:hover {
+  background-color: #f2f2f2
+}*/
+
+.experiments p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.experiments .variation_select{
+  margin-top: 5px;
+  cursor: pointer;
+  padding: 3px;
+}
+
+.experiments select {
+  width: 80%;
+}
+
+/*.experiments.scroll {
+  max-height: 300px;
+  overflow-y: scroll;
+}*/
+
+.no-experiments {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-left:3px solid red;
+  border-width: 80%;
+  background-color: #edeeef;
+  color:red;
+}
+
+.control-switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 20px;
+}
+
+.control-switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 10px;
+  width: 10px;
+  left: 5px;
+  bottom: 5px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(10px);
+  -ms-transform: translateX(10px);
+  transform: translateX(10px);
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.prevDef {
+  /*text-align: center;*/
+  background-color: #edeeef;
+  border-left: 3px solid green;
+  margin-bottom: 5px;
+  vertical-align: middle;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.prevDef > span {
+  font-size: 15px;
+  /*font-weight: bold;*/
+  padding-right: 3px;
+  padding-left: 10px;
+}
+
+.prevDef > label {
+  float: right;
+  margin-right: 5px;
+}
+
+.resetToControl {
+  /*text-align: center;*/
+  background-color: #edeeef;
+  border-left: 3px solid green;
+  margin-bottom: 5px;
+  vertical-align: middle;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.resetToControl > span {
+  font-size: 15px;
+  /*font-weight: bold;*/
+  padding-right: 3px;
+  padding-left: 10px;
+}
+
+.resetToControl > label {
+  float: right;
+  margin-right: 5px;
+}
+
+.resetToControl label {
+  vertical-align: bottom;
+}
+
+#events {
+  margin-top:.5em;
+}
+
+#events > p {
+  width:90%;
+  font-weight: bold;
+  display: inline;
+}
+
+#events > img {
+  float: right;
+  margin-right: 25px;
+  display: inline;
+  height: 20px;
+}
+
+#events > img:hover {
+  /*content: url('img/garbagebinhover.png');*/
+  cursor: pointer;
+}
+
+#eventsBox {
+  height: 100px;
+  /*border: 1px solid black;*/
+  overflow-y: scroll;
+  margin-top: 10px;
+}
+
+#eventsBox > div.infoElem {
+  border-left: 3px solid #009fe3;
+  padding: .5em;
+  margin-bottom: .5em;
+  margin-right: 8px;
+  cursor: pointer;
+  background-color: #edeeef;
+}
+
+#eventsBox > div.hiddenInfoElem {
+  border: 1px solid #009fe3;
+  margin-bottom: .5em;
+  margin-right:8px;
+  cursor: pointer;
+  background-color: #edeeef;
+  padding-bottom: 0.5em;
+}
+
+#eventsBox > div.infoElem:hover {
+  background-color: #f2f2f2;
+}
+
+#eventsBox > div.hiddenInfoElem:hover {
+  background-color: #f2f2f2;
+}
+
+#eventsBox > div.hiddenInfoElem > p {
+  margin: 0;
+  margin-left: 0.5em;
+  padding-top: 0.5em;
+}
+
+.editor {
+  display: none;
+  height: 220px;
+  max-height: 220px !important;
+  max-width: 500px;
+  margin-left: 3px;
+  margin-right: 8px;
+  overflow-x: scroll;
+}
+
+.tooltipText {
+  visibility: hidden;
+  width: 80px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 3px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 100;
+}
+
+div[class^="extraInfo"] div:hover > .tooltipText {
+  visibility: visible;
+  top:100%;
+  left:50%;
+}
+
+div[id^="goalsList"] {
+  /*background-color: #edeeef;*/
+  margin-left: 3px;
+  margin-right: 8px;
+}
+
+div[id^="goalsList"] > table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+div[id^="goalsList"] > table td, div[id^="goalsList"] > table th {
+  border: 1px solid #d6d6d6;
+  text-align: left;
+  padding-left: 3px;
+  padding-right: 3px;
+}
