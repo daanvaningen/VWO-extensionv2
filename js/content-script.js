@@ -25,17 +25,8 @@ const scriptPrevDefault = document.createElement('script');
 let VWOData;
 let length;
 let body = document.getElementsByTagName('body')[0];
-// body.append(scriptE2);
-// body.append(scriptE3);
-
-// console.log(window);
-// console.log("content-script " + window._vwo_acc_id);
-window.addEventListener("load", function() {
-    requestVWOData();
-}, true);
 
 function requestVWOData() {
-  // let body = document.getElementsByTagName('body')[0];
   body.append(scriptEl);
 }
 
@@ -43,24 +34,33 @@ function requestVWOData() {
 document.addEventListener('VWOData', function (e){
   // Receive VWO data from script
   VWOData = e.detail;
-  // if (VWOData.valid === 1){
-  //   body.append(scriptE3);
-  // }
+
   scriptEl.remove();
-  // length = Object.keys(VWOData.experiments).length;
 });
 
 document.addEventListener('getPrevDefault', function(e){
     console.log(e.detail);
-
-    //scriptGetVar.remove();
 })
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.message == "VWOData"){
         //body.append(scriptGetVar);
-        sendResponse(VWOData);
+        if(VWOData === undefined){
+            requestVWOData();
+            var total = 0;
+            var delta = 100;
+            var d = setInterval(function(){
+                total += delta;
+                if(VWOData !== undefined || total > 5000){
+                    clearInterval(d);
+                    sendResponse(VWOData);
+                }
+            }, delta);
+        }
+        else {
+            sendResponse(VWOData);
+        }
     }
     if(request.message == "Reload"){
         window.location.reload();
@@ -79,3 +79,7 @@ chrome.runtime.onMessage.addListener(
     }
   });
   // Remove script element from page
+
+  window.addEventListener("load", function() {
+      requestVWOData();
+  }, true);

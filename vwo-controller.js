@@ -440,12 +440,15 @@ function addEditor(expData, index){
 
         if(!callbackJS && !callbackCSS) resolve(resultcodes);
         else {
+          var total = 0;
+          var delta = 100;
           var d = window.setInterval(function(){
-            if(callbackDoneJS && callbackDoneCSS){
+            total += delta;
+            if((callbackDoneJS && callbackDoneCSS) || total > 2000){
               clearInterval(d);
               resolve(resultcodes);
             }
-          }, 100);
+        }, delta);
         }
     })
 
@@ -483,7 +486,7 @@ function add_experiments(experiments, campaignData){
             var extraInfo = createExtraInfoElem(i);
             var editorDivJS = createEditorDiv(i, 'JS');
             var editorDivCSS = createEditorDiv(i, 'CSS');
-            var goalsDiv = createGoalsDiv(exp, i);
+            // var goalsDiv = createGoalsDiv(exp, i);
 
             // var editorDivGlobal = createEditorDiv(i, 'JS');
             var x = document.createElement('div')
@@ -497,7 +500,7 @@ function add_experiments(experiments, campaignData){
             expdiv.appendChild(editorDivJS);
             expdiv.appendChild(editorDivCSS);
             // expdiv.appendChild(editorDivGlobal);
-            expdiv.appendChild(goalsDiv);
+            // expdiv.appendChild(goalsDiv);
             expdiv.appendChild(x);
             addEditor(exp, i);
 
@@ -558,7 +561,7 @@ function add_experiments(experiments, campaignData){
         expdiv.setAttribute('style', 'max-height:250px;overflow-y:scroll');
     }
 
-    // chrome.browserAction.setBadgeText({text:''+i+''})
+    chrome.browserAction.setBadgeText({text:''+i+''})
 }
 
 
@@ -571,6 +574,13 @@ function notAvailable() {
     // chrome.browserAction.setBadgeText({text:''+0+''})
 }
 
+function somethingWentWrong(){
+    app.querySelector('.loading').remove();
+    const somethingWentWrong = document.createElement('div');
+    somethingWentWrong.className = 'VWONotFound'
+          somethingWentWrong.innerHTML = '<h1>Something went wrong when retrieving the VWO object</h1>';
+    app.appendChild(somethingWentWrong);
+}
 
 function noExperimentsData() {
     app.querySelector('.loading').remove();
@@ -640,83 +650,91 @@ let href;
 let VWOData;
 function initVWO(data){
     const app = document.getElementById('app');
+    document.querySelector('#info > img').addEventListener('click', function(){
+        toggleVisibility(document.getElementById('description'));
+        toggleVisibility(document.getElementById('app'));
+    });
     console.log(data);
-    if (data === undefined || data.valid === 0)
-      notAvailable();
-    else if(data.valid === 2)
-      noExperimentsData();
-    else {
-        href = data.curhref;
-        app.querySelector('.loading').remove();
-        VWOData = data;
+    if((data !== null)){
+        if (data === undefined || data.valid === 0)
+          notAvailable();
+        else if(data === null || data.valid === 2)
+          noExperimentsData();
+        else {
+            href = data.curhref;
+            app.querySelector('.loading').remove();
+            VWOData = data;
 
-        const mainInfo = document.createElement('div');
-        mainInfo.className = 'mainInformation';
-        app.appendChild(mainInfo);
+            const mainInfo = document.createElement('div');
+            mainInfo.className = 'mainInformation';
+            app.appendChild(mainInfo);
 
-        const mainInfoDiv = document.getElementsByClassName('mainInformation')[0];
+            const mainInfoDiv = document.getElementsByClassName('mainInformation')[0];
 
-        const header = document.createElement('div');
-            header.innerHTML = '<h2> VWO is running on this page </h2>';
-        header.className = 'header';
+            const header = document.createElement('div');
+                header.innerHTML = '<h2> VWO is running on this page </h2>';
+            header.className = 'header';
 
-        const accID = VWOData.accID;
-        const userID = VWOData.userID;
-        const experiments = VWOData.experiments;
-        const campaignData = VWOData.campaignData;
+            const accID = VWOData.accID;
+            const userID = VWOData.userID;
+            const experiments = VWOData.experiments;
+            const campaignData = VWOData.campaignData;
 
-        /* Removed since 13-9-2017
-        if(accID != undefined){
-            const accElement = document.createElement('div');
-                  accElement.innerHTML = '<p> Account ID: ' + accID + '</p>';
-            accElement.className = 'accountID';
-            mainInfoDiv.appendChild(accElement);
-        }
-
-        if(userID != undefined){
-            const userElement = document.createElement('div');
-                  userElement.innerHTML = '<p> User ID: ' + userID +'</p>';
-            userElement.className = 'userID';
-            mainInfoDiv.appendChild(userElement);
-        } */
-
-        const experimentsElement = document.createElement('div');
-        experimentsElement.className = 'experiments';
-
-        const eventsElement = document.createElement('div');
-        eventsElement.id = 'events';
-
-        //mainInfoDiv.appendChild(header); 14-11-2017
-
-        var experimentsElementText = document.createElement('p');
-            experimentsElementText.className = 'experimentsElementText';
-            experimentsElementText.innerText = 'Active experiments';
-            app.appendChild(experimentsElementText);
-
-        app.appendChild(experimentsElement);
-        app.appendChild(eventsElement);
-
-        add_experiments(experiments, campaignData);
-
-        add_events_header(eventsElement);
-        add_events_box(app);
-        checkGoals();
-        var eventsBox = document.getElementById('eventsBox');
-        if(eventsBox) eventsBox.innerHTML = '';
-        window.setInterval(function(){
-            appendGoals();
-            setOnclicks();
-        }, 1000);
-        /* Onchange Listener vwo cookies
-         */
-        /*chrome.cookies.onChanged.addListener(function(changeInfo) {
-            console.log('onChanged')
-            if(changeInfo.cookie.name.includes('_vis_opt_exp_')){
-                var str = changeInfo.cookie.name;
-                var key = str.substring('_vis_opt_exp_'.length);
-                setStorage(key, '_vis_opt_exp_', true);
+            /* Removed since 13-9-2017
+            if(accID != undefined){
+                const accElement = document.createElement('div');
+                      accElement.innerHTML = '<p> Account ID: ' + accID + '</p>';
+                accElement.className = 'accountID';
+                mainInfoDiv.appendChild(accElement);
             }
-        });*/
+
+            if(userID != undefined){
+                const userElement = document.createElement('div');
+                      userElement.innerHTML = '<p> User ID: ' + userID +'</p>';
+                userElement.className = 'userID';
+                mainInfoDiv.appendChild(userElement);
+            } */
+
+            const experimentsElement = document.createElement('div');
+            experimentsElement.className = 'experiments';
+
+            const eventsElement = document.createElement('div');
+            eventsElement.id = 'events';
+
+            //mainInfoDiv.appendChild(header); 14-11-2017
+
+            var experimentsElementText = document.createElement('p');
+                experimentsElementText.className = 'experimentsElementText';
+                experimentsElementText.innerText = 'Active experiments';
+                app.appendChild(experimentsElementText);
+
+            app.appendChild(experimentsElement);
+            app.appendChild(eventsElement);
+
+            add_experiments(experiments, campaignData);
+
+            add_events_header(eventsElement);
+            add_events_box(app);
+            checkGoals();
+            var eventsBox = document.getElementById('eventsBox');
+            if(eventsBox) eventsBox.innerHTML = '';
+            window.setInterval(function(){
+                appendGoals();
+                setOnclicks();
+            }, 1000);
+            /* Onchange Listener vwo cookies
+             */
+            /*chrome.cookies.onChanged.addListener(function(changeInfo) {
+                console.log('onChanged')
+                if(changeInfo.cookie.name.includes('_vis_opt_exp_')){
+                    var str = changeInfo.cookie.name;
+                    var key = str.substring('_vis_opt_exp_'.length);
+                    setStorage(key, '_vis_opt_exp_', true);
+                }
+            });*/
+        }
+    } else {
+        somethingWentWrong();
     }
 }
 

@@ -31,30 +31,62 @@
 
 .ClickValue-link-title:hover {
   cursor: pointer;
-
-}
-#info > .infoText {
-    visibility: hidden;
-    width: 446px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 15px 15px;
-    float: right;
-
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
 }
 
-#info > img:hover + .infoText {
-    visibility: visible;
+#info > img:hover {
+  cursor: pointer;
+}
+
+#description {
+  border-left: 3px solid #009fe3;
+  min-width: 500px;
+  display: none;
+  padding-left: 10px;
+}
+
+#description > span:nth-of-type(1) {
+  font-size: 14px;
+}
+
+#description > span {
+  font-size: 12px;
+}
+
+#description > span.infoText {
+  display: block;
+  margin-left: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#description > .infoTextHeader {
+  margin-top:
+  font-size: 14px;
+  color: #009fe3
+}
+
+#description > p.infoTextHeader {
+  font-weight: bold;
+  font-size: 16px;
+  color: #009fe3;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+#description img {
+  height:20px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+#description > div.imgTextWrapper {
+  /*margin-top: 15px;*/
 }
 
 .VWONotFound {
   text-align: center;
   border-left: 3px solid red;
+  padding-left: 10px;
 }
 
 .mainInformation > .header > h1 {
