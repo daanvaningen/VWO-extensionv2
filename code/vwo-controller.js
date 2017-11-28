@@ -3,10 +3,10 @@
  * Daan van Ingen
  *
  * vwo-controller.js handles the app layout and is responsible for handling
- * variations changes. Included bij main.html
+ * variations changes. Included by main.html
  */
 
-//import * as js_beautify from 'js/beautify.js';
+
 /* Resets the current page and closes the current window after 1 sec.
  */
 function resetCollapse(){
@@ -76,6 +76,9 @@ function changeCookies(experimentsCookieNames){
     })
 }
 
+
+/* delete a set cookie for a given expID and goal ID
+ */
 function removeGoalCookie(expID, goalID){
     var cookieName = '_vis_opt_exp_' + expID + '_goal_' + goalID;
     var domain;
@@ -93,6 +96,7 @@ function removeGoalCookie(expID, goalID){
     })
 }
 
+
 /* Radio button onclick function.
  * Gathers active experiment names and calls the changeCookies function.
  */
@@ -106,8 +110,9 @@ function allExpToControl(){
 }
 
 
+/* Activate preventDefault. If its already active reload the page
+ */
 function prevDefault(){
-    console.log(VWOData.CVPreventDefault);
     if(!VWOData.CVPreventDefault){
         VWOData.CVPreventDefault = true;
         chrome.runtime.getBackgroundPage(function(eventPage){
@@ -119,12 +124,15 @@ function prevDefault(){
 }
 
 
+/* Hide an unhiden element and unhide a hidden element
+ */
 function toggleVisibility(elem){
     if(elem != undefined){
         if(elem.style.display == 'none') elem.style.display = 'block';
         else elem.style.display = 'none';
     }
 }
+
 
 /* Called by add_experiments(). Adds experiment type information
  */
@@ -174,6 +182,9 @@ function add_vars(x, exp, campD){
     x.appendChild(dropdown);
 }
 
+/* Add campaign information to the experiment div when campaignData is not undefined
+ * in the VWOData object
+ */
 function add_vars_no_camp_data(x, exp){
     var variations = exp.comb_n;
     var dropdown = document.createElement('select');
@@ -193,6 +204,11 @@ function add_vars_no_camp_data(x, exp){
     x.appendChild(dropdown);
 }
 
+
+/* Add the extra information ribbon to and experiment.
+ * Ribbon contains: JS code button, CSS code button and goals button.
+ * Bind the onclicks on the buttons
+ */
 function createExtraInfoElem(index){
     var infoWrapper = document.createElement('div');
         infoWrapper.className = 'extraInfo' + index;
@@ -340,6 +356,9 @@ function createExtraInfoElem(index){
     return infoWrapper;
 }
 
+
+/* Create the div containing the table holding the goals information
+ */
 function createGoalsDiv(expData, index){
     var goalsObj = expData.goals;
     // console.log(goalsObj, typeof(goalsObj));
@@ -371,6 +390,10 @@ function createGoalsDiv(expData, index){
     return goalsDiv;
 }
 
+
+/* Create an div with a specific index and type as ID. This div with this ID and
+ * type will be used by the ace editor.
+ */
 function createEditorDiv(index, type){
     var editorDiv = document.createElement('div');
         editorDiv.className = 'editor';
@@ -380,6 +403,10 @@ function createEditorDiv(index, type){
     return editorDiv
 }
 
+
+/* Get the raw experiment code from the VWOData object.
+ * Note that VWO uses different formats to store the code.
+ */
 function getRawExperimentCode(expData, index){
     var e = document.querySelector('.experiment'+index+' > select');
     var value = parseInt(e.options[e.selectedIndex].value);
@@ -394,6 +421,11 @@ function getRawExperimentCode(expData, index){
     return '';
 }
 
+
+/* Clean special characters from the code string. This function might need some
+ * work. VWO does some weird stuff and it is difficult to determine which special
+ * characters belong to the original code or are added by VWO.
+ */
 function cleanSpecialCodeChars(codeString){
     var temp = codeString;
     temp = temp.replace(/(\\n|\\t)/g, '');
@@ -406,6 +438,9 @@ function cleanSpecialCodeChars(codeString){
 }
 
 
+/* Get the raw experiment code from the object and clean it. When this is done
+ * place it in the corresponding Ace editor
+ */
 function addEditor(expData, index){
     var raw = getRawExperimentCode(expData, index);
     /*var globalJS = */
@@ -420,83 +455,83 @@ function addEditor(expData, index){
         var callbackDoneCSS = false;
 
         if(raw.indexOf('<script') == 0){ //clean layout
-          indexClosingTag = raw.indexOf('</script>');
-          if(indexClosingTag > -1){
-              tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
-              resultcodes[0] = tempJS;
-          }
-          //CSS
-          indexClosingTag = raw.indexOf('</style>');
-          if(indexClosingTag > -1){
-              resultcodes[1] = raw.substring(raw.indexOf('style>')+6, indexClosingTag);
-          }
+            indexClosingTag = raw.indexOf('</script>');
+            if(indexClosingTag > -1){
+                tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
+                resultcodes[0] = tempJS;
+            }
+            //CSS
+            indexClosingTag = raw.indexOf('</style>');
+            if(indexClosingTag > -1){
+                resultcodes[1] = raw.substring(raw.indexOf('style>')+6, indexClosingTag);
+            }
         }
         else { //dirty shizzle
-          indexClosingTag = raw.indexOf('<\\/script>');
-          if(indexClosingTag > -1){
-              callbackJS = true;
-              tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
-              tempJS = cleanSpecialCodeChars(tempJS)
+            indexClosingTag = raw.indexOf('<\\/script>');
+            if(indexClosingTag > -1){
+                callbackJS = true;
+                tempJS = raw.substring(raw.indexOf('>')+1, indexClosingTag);
+                tempJS = cleanSpecialCodeChars(tempJS)
 
-              chrome.runtime.getBackgroundPage(function(eventPage){
-                eventPage.js_beautify_trigger(tempJS, {indent_size: 1, indent_char: '\t'}, prettyTextJS);
-              })
-              function prettyTextJS(text){
-                resultcodes[0] = text;
-                callbackDoneJS = true;
-              }
-          }
-          //CSS
-          indexClosingTag = raw.indexOf('<\\/style>');
-          if(indexClosingTag > -1){
-              callbackCSS = true;
-              tempCSS = raw.substring(raw.indexOf('style>')+6, indexClosingTag);
-              tempCSS = cleanSpecialCodeChars(tempCSS);
+                chrome.runtime.getBackgroundPage(function(eventPage){
+                    eventPage.js_beautify_trigger(tempJS, {indent_size: 1, indent_char: '\t'}, prettyTextJS);
+                })
+                function prettyTextJS(text){
+                    resultcodes[0] = text;
+                    callbackDoneJS = true;
+                }
+            }
+            //CSS
+            indexClosingTag = raw.indexOf('<\\/style>');
+            if(indexClosingTag > -1){
+                callbackCSS = true;
+                tempCSS = raw.substring(raw.indexOf('style>')+6, indexClosingTag);
+                tempCSS = cleanSpecialCodeChars(tempCSS);
 
-              chrome.runtime.getBackgroundPage(function(eventPage){
-                  eventPage.beautifyCSS_trigger(tempCSS, prettyTextCSS);
-              })
-              function prettyTextCSS(text){
-                  resultcodes[1] = text;
-                  callbackDoneCSS = true;
-              }
-
-          }
+                chrome.runtime.getBackgroundPage(function(eventPage){
+                    eventPage.beautifyCSS_trigger(tempCSS, prettyTextCSS);
+                })
+                function prettyTextCSS(text){
+                    resultcodes[1] = text;
+                    callbackDoneCSS = true;
+                }
+            }
         }
 
         if(!callbackJS && !callbackCSS) resolve(resultcodes);
         else {
-          var total = 0;
-          var delta = 100;
-          var d = window.setInterval(function(){
-            total += delta;
-            if((callbackDoneJS && callbackDoneCSS) || total > 2000){
-              clearInterval(d);
-              resolve(resultcodes);
-            }
-        }, delta);
+            var total = 0;
+            var delta = 100;
+            var d = window.setInterval(function(){
+                total += delta;
+                if((callbackDoneJS && callbackDoneCSS) || total > 2000){
+                    clearInterval(d);
+                    resolve(resultcodes);
+                }
+            }, delta);
         }
     })
 
     clean.then((resultCodes) => {
         var editor = ace.edit('editorJS'+index);
-          editor.setTheme('ace/theme/monokai');
-          editor.getSession().setMode("ace/mode/javascript");
-          editor.setReadOnly(true);
-          editor.setValue(resultCodes[0]);
-          // editor.setOption('wrap', 60);
-          // editor.getSession().setUseWrapMode(true);
-          editor.selection.moveCursorFileStart();
+            editor.setTheme('ace/theme/monokai');
+            editor.getSession().setMode("ace/mode/javascript");
+            editor.setReadOnly(true);
+            editor.setValue(resultCodes[0]);
+            // editor.setOption('wrap', 60);
+            // editor.getSession().setUseWrapMode(true);
+            editor.selection.moveCursorFileStart();
 
         var editor = ace.edit('editorCSS'+index);
-          editor.setTheme('ace/theme/monokai');
-          editor.getSession().setMode("ace/mode/css");
-          editor.setReadOnly(true);
-          editor.setValue(resultCodes[1]);
-          // editor.setOption('wrap', 60);
-          editor.selection.moveCursorFileStart();
+            editor.setTheme('ace/theme/monokai');
+            editor.getSession().setMode("ace/mode/css");
+            editor.setReadOnly(true);
+            editor.setValue(resultCodes[1]);
+            // editor.setOption('wrap', 60);
+            editor.selection.moveCursorFileStart();
     })
 }
+
 
 /* Called by initVWO.
  * Sets up html elements to add experiment information, if any.
@@ -599,6 +634,8 @@ function add_experiments(experiments, campaignData){
 }
 
 
+/* Function that is called when there is no VWO object on the page
+ */
 function notAvailable() {
     app.querySelector('.loading').remove();
     const notFound = document.createElement('div');
@@ -608,6 +645,10 @@ function notAvailable() {
     // chrome.browserAction.setBadgeText({text:''+0+''})
 }
 
+
+/* On some pages there are issues with retrieving the VWO object, most likely due
+ * to page reloads etc. This is a fallback
+ */
 function somethingWentWrong(){
     app.querySelector('.loading').remove();
     const somethingWentWrong = document.createElement('div');
@@ -616,6 +657,10 @@ function somethingWentWrong(){
     app.appendChild(somethingWentWrong);
 }
 
+
+/* Function that is called when VWO is found but there are no experiments on the
+ * page
+ */
 function noExperimentsData() {
     app.querySelector('.loading').remove();
     const mainInfo = document.createElement('div');
@@ -646,6 +691,8 @@ function noExperimentsData() {
 }
 
 
+/* Add the tracked goals header text and the garbagebin
+ */
 function add_events_header(eventsElement){
     var eventsHeader = document.createElement('P');
     var text = document.createTextNode("Goals fired on this page");
@@ -680,6 +727,9 @@ function add_events_box(app){
     app.appendChild(eventsBox);
 }
 
+
+/* Callback function on retrieving the VWO object
+ */
 let href;
 let VWOData;
 function initVWO(data){
@@ -714,28 +764,11 @@ function initVWO(data){
             const experiments = VWOData.experiments;
             const campaignData = VWOData.campaignData;
 
-            /* Removed since 13-9-2017
-            if(accID != undefined){
-                const accElement = document.createElement('div');
-                      accElement.innerHTML = '<p> Account ID: ' + accID + '</p>';
-                accElement.className = 'accountID';
-                mainInfoDiv.appendChild(accElement);
-            }
-
-            if(userID != undefined){
-                const userElement = document.createElement('div');
-                      userElement.innerHTML = '<p> User ID: ' + userID +'</p>';
-                userElement.className = 'userID';
-                mainInfoDiv.appendChild(userElement);
-            } */
-
             const experimentsElement = document.createElement('div');
             experimentsElement.className = 'experiments';
 
             const eventsElement = document.createElement('div');
             eventsElement.id = 'events';
-
-            //mainInfoDiv.appendChild(header); 14-11-2017
 
             var experimentsElementText = document.createElement('p');
                 experimentsElementText.className = 'experimentsElementText';
@@ -756,22 +789,15 @@ function initVWO(data){
                 appendGoals();
                 setOnclicks();
             }, 1000);
-            /* Onchange Listener vwo cookies
-             */
-            /*chrome.cookies.onChanged.addListener(function(changeInfo) {
-                console.log('onChanged')
-                if(changeInfo.cookie.name.includes('_vis_opt_exp_')){
-                    var str = changeInfo.cookie.name;
-                    var key = str.substring('_vis_opt_exp_'.length);
-                    setStorage(key, '_vis_opt_exp_', true);
-                }
-            });*/
         }
     } else {
         somethingWentWrong();
     }
 }
 
+
+/* On load get the VWOData and bind onclick on eventsHeader
+ */
 window.addEventListener('load', function(evt) {
     chrome.runtime.getBackgroundPage(function(eventPage){
         eventPage.queryContentScript(initVWO);
@@ -785,6 +811,8 @@ window.addEventListener('load', function(evt) {
 });
 
 
+/* Get the information belonging to a specific number and test number
+ */
 function getGoalInfo(testNum, goalNum){
     let goalData = VWOData.experiments;
     if(goalData[testNum] != undefined && goalData[testNum].goals[goalNum] != undefined){
@@ -794,6 +822,9 @@ function getGoalInfo(testNum, goalNum){
     return '';
 }
 
+
+/* Check whether a goal is already listed in the fired goals list
+ */
 function alreadyListed(text){
     var elems = document.querySelectorAll('#eventsBox > div');
     for(var i = 0; i < elems.length; i++){
@@ -802,6 +833,9 @@ function alreadyListed(text){
     return false;
 }
 
+
+/* Bind the onclick on the fired goal elements to get more information
+ */
 function setOnclicks(){
     var elems = document.querySelectorAll('.infoElem');
     for(var i = 0; i < elems.length; i++){
@@ -824,6 +858,9 @@ function setOnclicks(){
     }
 }
 
+
+/* Add the extra info to a fired goal
+ */
 function appendGoalInfo(text, testNum, goalNum){
     var eventsBox = document.getElementById('eventsBox');
     eventsBox.innerHTML += '<div class="infoElem">'+text+'</div>';
@@ -847,9 +884,11 @@ function appendGoalInfo(text, testNum, goalNum){
     eventsBox.appendChild(hiddenInfo);
 }
 
+
+/* Append the currently fired goals for the current experiments
+ */
 function appendGoals(){
     var splitKey;
-
     chrome.storage.local.get(null, function(items) {
         for(key in items){
             if(key != "key" && !key.includes('combi')){
@@ -863,6 +902,9 @@ function appendGoals(){
     });
 }
 
+
+/* Append one newly fired goal
+ */
 function appendGoal(goal){
     var splitKey = key.split('_');
     var eventsBox = document.getElementById('eventsBox');
@@ -872,6 +914,7 @@ function appendGoal(goal){
         eventsBox.innerHTML += '<span>'+text+'<span><br>';
     }
 }
+
 
 /* Add key value pair to storage. Update current key value if present.
  */
@@ -891,13 +934,8 @@ function setStorage(key, value, append){
 }
 
 
-function logCookies(cookies) {
-  for (cookie of cookies) {
-    //console.log(cookie.value);
-  }
-}
-
-
+/* Check the cookies and add fired VWO goals the localstorage
+ */
 function checkGoals(){
     chrome.storage.local.clear();
     var key;
@@ -911,5 +949,4 @@ function checkGoals(){
             }
         }
     });
-    //appendGoals();
 }
