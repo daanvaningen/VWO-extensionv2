@@ -1,0 +1,158 @@
+* {
+  font-family: 'Open Sans', sans-serif;
+}
+
+body {
+  margin: 0px;
+  font-size: 16px;
+}
+
+#app {
+  min-width: 400px;
+  min-height: 70px;
+}
+
+#info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #2f52e0;
+  padding: 10px;
+  color: white;
+}
+
+#info > p {
+    font-family: 'Cantarell' !important;
+    font-size: 16px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.help-btn {
+  color: #2f52e0;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: white;
+  border-radius: 100%;
+  padding: 4px 11px 4px 11px;
+  cursor: pointer;
+}
+
+.ClickValue-link-title:hover {
+  cursor: pointer;
+}
+
+#description {
+  font-size: 75%;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.description-img {
+  max-width: 300px;
+}
+
+#main-content {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.API-key {
+  margin-bottom: 10px;
+  /* padding-bottom: 5px;
+  border-bottom: 2px solid #2f52e0; */
+}
+
+.current-keys {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.api-key-select {
+  font-size: 12px;
+  max-width: 200px;
+}
+
+.api-key-select:hover {
+  cursor: pointer;
+}
+
+.add-a-key {
+  margin-right: 20px;
+}
+
+.add-a-key:hover{
+  cursor: pointer;
+}
+
+.remove-a-key:hover{
+  cursor: pointer;
+}
+
+.add-new-key {
+  margin-top: 10px;
+}
+
+.experiments {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.experiments-header {
+  display: none;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 7px;
+  /* margin-top: 10px; */
+  margin-bottom: 10px;
+  border-top: 2px solid #2f52e0;
+}
+
+.experiment {
+  border: 1px #e4e4e4 solid;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+.no-experiments {
+  font-weight: bold;
+}
+
+.no-vwo {
+  font-weight: bold;
+}
+
+.goals {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.goals-header {
+  position: relative; 
+  display: none;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 7px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-top: 2px solid #2f52e0;
+}
+
+.garbage-bin {
+  height:20px;
+}
+
+.garbage-bin:hover {
+  cursor: pointer;
+}
+
+.goal {
+  border: 1px #e4e4e4 solid;
+  padding: 10px;
+  margin-bottom: 5px;
+}

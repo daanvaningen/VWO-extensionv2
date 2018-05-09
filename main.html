@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cantarell" rel="stylesheet">
+  <link href="./css/main.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/spinner.css">
+  <link rel="stylesheet" href="/css/scrollbar.css">
+  <link rel="stylesheet" href="/css/toggle.css">
+  <script src="vwo-controller.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div id="info">
+      <p class="ClickValue-link-title">ClickValue's VWO Chrome extension</p>
+      <span class="help-btn">?</span>
+    </div>
+    <div id="description" style="display:none">
+      <p>
+        This chrome extension is build by ClickValue.
+        ClickValue is an Amsterdam based, data driven, online marketing agency.
+        The tool makes users able to see active VWO experiments and change test
+        variations. For more information you can visit www.clickvalue.nl
+      </p>
+      <p>This new version uses the VWO API to retrieve active experiments and goals.</p>
+      <h3>API key</h3>
+      <p>
+        To use the API you will first need to create an API token (if you already
+        have a token for the extension in your VWO main account you don't have to
+        create a new one and add it directly to the extension). The token will be
+        used to communicate with the VWO API and retrieve the data that belongs to
+        account(s) holding the token. We advice you to create 1 token for your main account.
+        To create a token please follow these steps:
+      </p>
+      <ul>
+        <li>
+        Visit <a href="http://app.vwo.com/#/developers/tokens">
+        http://app.vwo.com/#/developers/tokens</a>.
+        </li>
+        <li>Login to the account for which you want to create a token</li>
+        <li>Press "Add another API token"</li>
+        <li>Insert a token name and as a permission select browse</li>
+        <li>Press "Generate"</li>
+        <li>Copy the token text and add it to the extension</li>
+      </ul>
+    </div>
+    <div id=main-content>
+      <div class="API-key">
+        <div class="current-keys">
+          <label>API keys: <select class="api-key-select"></select></label>
+          <div>
+            <img src="/img/plus.svg" class="add-a-key">
+            <img src="/img/minus.svg" class="remove-a-key">
+          </div>
+        </div>
+        <div class="add-new-key" style="display:none">
+          <form>
+            <label>Add API key: </label>
+            <input class="add-api-key" type="text">
+            <button class="add-api-key-btn">Add</button>
+          </form>
+        </div>
+      </div>
+    <div class="experiments">
+      <div class="experiments-header">
+        <span style="font-weight:bold">Experiments</span>
+        <span class="sk-folding-cube">
+          <div class="sk-cube1 sk-cube"></div>
+          <div class="sk-cube2 sk-cube"></div>
+          <div class="sk-cube4 sk-cube"></div>
+          <div class="sk-cube3 sk-cube"></div>
+        </span>
+      </div>
+    </div>
+    <div class="goals" id="eventsBox">
+      <div class="goals-header">
+        <span style="font-weight:bold">Fired goals</span>
+        <!-- <label class="onoffswitch-label" for="blockqubit"> -->
+
+        <img class="garbage-bin" src="img/garbagebin.png" style="display:none">
+        <span class="sk-folding-cube goals-cube">
+          <div class="sk-cube1 sk-cube"></div>
+          <div class="sk-cube2 sk-cube"></div>
+          <div class="sk-cube4 sk-cube"></div>
+          <div class="sk-cube3 sk-cube"></div>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
