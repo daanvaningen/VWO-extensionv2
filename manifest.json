@@ -27,7 +27,8 @@
     "cookies"
   ],
   "web_accessible_resources" : [
-    "/js/dom-script.js"
+    "/js/dom-script.js",
+    "/js/prevDefault.js"
   ],
 
   "content_scripts": [

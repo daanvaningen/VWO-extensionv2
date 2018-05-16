@@ -29,7 +29,6 @@
       }
     }
 
-    console.log(account_ID);
     if(account_ID !== undefined){
       VWOData.is_vwo_page = true;
       VWOData.account_ID = account_ID;
@@ -37,6 +36,7 @@
     else {
       VWOData.is_vwo_page = false;
     }
+    VWOData.CVPreventDefault = false;
 
     return VWOData;
   }

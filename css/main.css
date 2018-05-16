@@ -98,7 +98,7 @@ body {
   margin-top: 10px;
 }
 
-.experiments {
+.experiments .experiments-wrapper {
   max-height: 250px;
   overflow-y: auto;
 }
@@ -127,13 +127,13 @@ body {
   font-weight: bold;
 }
 
-.goals {
+.goals .goals-wrapper {
   max-height: 250px;
   overflow-y: auto;
 }
 
 .goals-header {
-  position: relative; 
+  position: relative;
   display: none;
   flex-direction: row;
   justify-content: space-between;
@@ -155,4 +155,34 @@ body {
   border: 1px #e4e4e4 solid;
   padding: 10px;
   margin-bottom: 5px;
+}
+
+.goal:hover {
+  cursor: pointer;
+  background-color: #efefef;
+}
+
+.hiddenInfoElem {
+  display: none;
+  border: 1px #e4e4e4 solid;
+  padding: 10px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.hiddenInfoElem:hover {
+  cursor:pointer;
+  background-color: #efefef;
+}
+
+.hiddenInfoElem-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.goal-urls > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

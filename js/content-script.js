@@ -10,6 +10,10 @@ const scriptEl = document.createElement('script');
       scriptEl.type = 'text/javascript';
       scriptEl.src = chrome.extension.getURL('/js/dom-script.js');
 
+const scriptPrevDefault = document.createElement('script');
+    scriptPrevDefault.type = 'text/javascript';
+    scriptPrevDefault.src = chrome.extension.getURL('/js/prevDefault.js');
+
 let VWOData;
 let length;
 let body = document.getElementsByTagName('body')[0];
@@ -33,37 +37,36 @@ document.addEventListener('getPrevDefault', function(e){
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.message == "VWOData"){
-        //body.append(scriptGetVar);
-        if(VWOData === undefined){
-            requestVWOData();
-            var total = 0;
-            var delta = 100;
-            var d = setInterval(function(){
-                total += delta;
-                if(VWOData !== undefined || total > 5000){
-                    clearInterval(d);
-                    sendResponse(VWOData);
-                }
-            }, delta);
-        }
-        else {
+      //body.append(scriptGetVar);
+      if(VWOData === undefined){
+        requestVWOData();
+        var total = 0;
+        var delta = 100;
+        var d = setInterval(function(){
+          total += delta;
+          if(VWOData !== undefined || total > 5000){
+            clearInterval(d);
             sendResponse(VWOData);
-        }
+          }
+        }, delta);
+      }
+      else {
+        sendResponse(VWOData);
+      }
     }
     if(request.message == "Reload"){
-        window.location.reload();
+      window.location.reload();
     }
     if(request.message == "count_experiments"){
-        sendResponse({num_exp:length});
+      sendResponse({num_exp:length});
     }
     if(request.message == "prevDefault"){
-        if(!VWOData.CVPreventDefault){
-            VWOData.CVPreventDefault = true;
-            body.append(scriptPrevDefault);
-        } else if(VWOData.CVPreventDefault){
-            VWOData.CVPreventDefault = false;
-        }
-
+      if(!VWOData.CVPreventDefault){
+        VWOData.CVPreventDefault = true;
+        body.append(scriptPrevDefault);
+      } else if(VWOData.CVPreventDefault){
+        VWOData.CVPreventDefault = false;
+      }
     }
   });
   // Remove script element from page
