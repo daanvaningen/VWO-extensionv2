@@ -19,8 +19,12 @@ function queryContentScript(callback){
     });
 }
 
-function openTab(){
-    chrome.tabs.create({url:"http://www.clickvalue.nl"});
+function openCVTab(){
+  chrome.tabs.create({url:"http://www.clickvalue.nl"});
+}
+
+function openDevTokenTab(){
+  chrome.tabs.create({url:"http://app.vwo.com/#/developers/tokens"});
 }
 
 function prevDefault(){
@@ -28,6 +32,3 @@ function prevDefault(){
         chrome.tabs.sendMessage(tabs[0].id, {message: "prevDefault"});
     });
 }
-// chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-//     queryContentScript(initVWO);
-// });

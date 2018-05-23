@@ -12,6 +12,9 @@ var processed_experiments = 0;
 var possible_experiments = 0;
 var processed_experiment_goals = 0;
 var CVPreventDefault;
+// var date = new Date();
+// var last_api_call_time = date.getTime();
+// console.log(last_api_call_time);
 /*
  */
 window.addEventListener('load', function(evt) {
@@ -21,7 +24,13 @@ window.addEventListener('load', function(evt) {
   /* Clickvalue link click */
   document.getElementsByClassName('ClickValue-link-title')[0].addEventListener('click', function(){
     chrome.runtime.getBackgroundPage(function(eventPage){
-      eventPage.openTab();
+      eventPage.openCVTab();
+    })
+  }, false);
+
+  document.getElementsByClassName('dev-token')[0].addEventListener('click', function(){
+    chrome.runtime.getBackgroundPage(function(eventPage){
+      eventPage.openDevTokenTab();
     })
   }, false);
 
@@ -83,53 +92,59 @@ function changeCookie(){
 
 function add_main_content(){
   let api_key = get_selected_api_key();
+  if(api_key !== null && api_key !== undefined && api_key !== ""){
+    vwo_api_call('GET', `https://app.vwo.com/api/v2/accounts/${ACCOUNT_ID}/campaigns`).then(function(response){
+      let obj = JSON.parse(response);
+      let active_exps = filter_active_exps(obj);
 
-  vwo_api_call('GET', `https://app.vwo.com/api/v2/accounts/${ACCOUNT_ID}/campaigns`).then(function(response){
-    let obj = JSON.parse(response);
-    let active_exps = filter_active_exps(obj);
-
-    let vwo_cookies = [];
-    chrome.tabs.getSelected(null, function(tab){
-      let urlObj = new URL(tab.url);
-      HREF = urlObj.href;
-      DOMAIN = urlObj.hostname.replace('www.', '');
-      chrome.cookies.getAll({"domain": DOMAIN}, function(cookies) {
-        for(let i = 0; i < cookies.length; i++){
-          if(cookies[i].name.indexOf('_vis_opt_exp_') > -1){
-            vwo_cookies.push(cookies[i]);
+      let vwo_cookies = [];
+      chrome.tabs.getSelected(null, function(tab){
+        let urlObj = new URL(tab.url);
+        HREF = urlObj.href;
+        DOMAIN = urlObj.hostname.replace('www.', '');
+        chrome.cookies.getAll({"domain": DOMAIN}, function(cookies) {
+          for(let i = 0; i < cookies.length; i++){
+            if(cookies[i].name.indexOf('_vis_opt_exp_') > -1){
+              vwo_cookies.push(cookies[i]);
+            }
           }
-        }
-        set_up_experiments(active_exps, vwo_cookies);
+          set_up_experiments(active_exps, vwo_cookies);
+        });
       });
-    });
-    const prevDef = document.createElement('div');
-    prevDef.className = 'prevDef';
-    prevDef.innerHTML = '<span>Prevent Default </span>\
-                    <label class="control-switch"> \
-                    <input type="checkbox"> \
-                    <div class="slider round"></div> \
-                    </label>';
+      const prevDef = document.createElement('div');
+      prevDef.className = 'prevDef';
+      prevDef.innerHTML = '<span>Prevent Default </span>\
+                      <label class="control-switch"> \
+                      <input type="checkbox"> \
+                      <div class="slider round"></div> \
+                      </label>';
 
-    document.querySelector('.goals-header').insertBefore(prevDef, document.querySelector('.garbage-bin'));
-    const prevDefRadio = document.querySelector('.prevDef input');
-    prevDefRadio.onclick = prevDefault;
-    if(CVPreventDefault){
-        document.querySelector('.prevDef input').checked = true;
-    }
-    else {
-        document.querySelector('.prevDef input').checked = false;
-    }
+      document.querySelector('.goals-header').insertBefore(prevDef, document.querySelector('.garbage-bin'));
+      const prevDefRadio = document.querySelector('.prevDef input');
+      prevDefRadio.onclick = prevDefault;
+      if(CVPreventDefault){
+          document.querySelector('.prevDef input').checked = true;
+      }
+      else {
+          document.querySelector('.prevDef input').checked = false;
+      }
 
-  })
-  .catch(function(error){
-    console.log(error);
-    if(error.status === 403){
-      let unauth = document.createElement('div');
-        unauth.className = 'unauthorized';
-        unauth.innerHTML = `<p>unauthorized request, make sure you have selected the right API key</p>`;
-      document.querySelector('.experiments').appendChild(unauth);
-    }
-  })
+    })
+    .catch(function(error){
+      if(error.status === 403 || error.status === 401){
+        let unauth = document.createElement('div');
+          unauth.className = 'unauthorized';
+          unauth.innerHTML = `<p>unauthorized request, make sure you have selected the right API token</p>`;
+        document.querySelector('.experiments').appendChild(unauth);
+      }
+    })
+  }
+  else {
+    let unauth = document.createElement('div');
+      unauth.className = 'no-api-key';
+      unauth.innerHTML = `<p>Please select or add an api token</p>`;
+    document.querySelector('.experiments').appendChild(unauth);
+  }
 }
 
 
@@ -209,13 +224,15 @@ function add_listeners(){
   document.querySelector('.add-api-key-btn').addEventListener('click', function(e){
     chrome.storage.sync.get(['vwo-api-keys'], function(result){
       let value = document.querySelector('.add-api-key').value;
+      let name = document.querySelector('.api-key-name').value;
+      let combined = `(${name}) ${value}`;
       if(value !== ""){
         if(Object.keys(result).length === 0 && result.constructor === Object){
-          chrome.storage.sync.set({'vwo-api-keys': [value]});
+          chrome.storage.sync.set({'vwo-api-keys': [combined]});
         } else {
           let current_keys = result['vwo-api-keys'];
-          if(!current_keys.includes(value)){
-            current_keys.push(value);
+          if(!current_keys.includes(combined)){
+            current_keys.push(combined);
             chrome.storage.sync.set({'vwo-api-keys': current_keys});
           }
         }
@@ -228,44 +245,63 @@ function add_listeners(){
   })
 
   document.querySelector('.remove-a-key').addEventListener('click', function(){
-    current_selected = get_selected_api_key();
+    let select = document.querySelector('.api-key-select')
+    current_selected = select.options[select.selectedIndex].innerText;
     chrome.storage.sync.get(['vwo-api-keys'], function(result){
       if(Object.keys(result).length !== 0 && result.constructor === Object){
         let current_keys = result['vwo-api-keys'];
         let index = current_keys.indexOf(current_selected);
         if(index > -1) current_keys.splice(index, 1);
         chrome.storage.sync.set({'vwo-api-keys': current_keys}, function(){
-          fill_api_keys_select();
+          console.log('wewewewewew');
+          let succes_message = document.createElement('p');
+            succes_message.className = 'succes-message';
+            succes_message.innerText = 'Succesfully removed key';
+            document.querySelector('.API-key').appendChild(succes_message);
+          fill_api_keys_select(proceed=false);
         });
       }
     });
   });
 
-  document.querySelector('.garbage-bin').addEventListener('click', function(){
-    let goals = document.querySelectorAll('.goal');
-    for(let i = 0; i < goals.length; i++){
-      let expr_id = goals[i].getAttribute('expr_id');
-      let goal_id = goals[i].getAttribute('goal_id');
-      removeGoalCookie(expr_id, goal_id);
-      goals[i].parentNode.removeChild(goals[i]);
-    }
-  })
+  document.querySelector('.api-key-select').addEventListener('change', update_API_key_index);
 }
 
 
-function fill_api_keys_select(procceed=true){
-  let api_select = document.querySelector('.api-key-select');
-  api_select.innerHTML = "";
-  chrome.storage.sync.get(['vwo-api-keys'], function(result){
-    let stored_keys = result['vwo-api-keys'];
-    for(let i = 0; i < stored_keys.length; i++){
-      if(i == 0){
-        api_select.innerHTML += `<option value=${i} selected>${stored_keys[i]}</option>`;
-      } else {
-        api_select.innerHTML += `<option value=${i}>${stored_keys[i]}</option>`;
-      }
+function update_API_key_index(){
+  let select = document.querySelector('.api-key-select');
+  let index = select.selectedIndex;
+
+  chrome.storage.sync.set({'vwo-api-key-index': index}, function() {
+    console.log(index);
+  });
+}
+
+
+function fill_api_keys_select(proceed=true){
+  chrome.storage.sync.get('vwo-api-key-index', function(result) {
+    console.log(result);
+    let index = result['vwo-api-key-index'];
+    if(index === undefined){ //First time
+      index = 0;
+      chrome.storage.sync.set({'vwo-api-key-index': index}, function() {
+        console.log(index);
+      });
     }
-    if(procceed) add_main_content();
+    let api_select = document.querySelector('.api-key-select');
+    api_select.innerHTML = "";
+    chrome.storage.sync.get(['vwo-api-keys'], function(result){
+      let stored_keys = result['vwo-api-keys'];
+      if(index >= stored_keys.length) index = 0;
+      for(let i = 0; i < stored_keys.length; i++){
+        if(i == index){
+          api_select.innerHTML += `<option value=${i} selected>${stored_keys[i]}</option>`;
+        } else {
+          api_select.innerHTML += `<option value=${i}>${stored_keys[i]}</option>`;
+        }
+      }
+      if(proceed) add_main_content();
+    });
   });
 }
 
@@ -317,19 +353,20 @@ function get_selected_api_key(){
   }
   catch(error) {
     value = "";
+    return null;
   }
   finally {
-    return value;
+    let sep = value.split(') ');
+    return sep[1];
   }
 }
 
 
 function set_account_ID(data){
-  console.log(data);
   CVPreventDefault = data.CVPreventDefault
+  add_listeners();
   if(data.is_vwo_page){
     ACCOUNT_ID = data.account_ID;
-    add_listeners();
     fill_api_keys_select();
   }
   else {
@@ -416,6 +453,19 @@ function update_loader_icon_goals(){
   if(processed_experiment_goals >= possible_experiments){
     toggleVisibility(document.querySelector('.goals .sk-folding-cube'));
     toggleVisibility(document.querySelector('.goals .garbage-bin'));
+
+    // Set garbage-bin click listener
+    document.querySelector('.garbage-bin').addEventListener('click', function(){
+      let goals = document.querySelectorAll('.goal');
+      for(let i = 0; i < goals.length; i++){
+        let expr_id = goals[i].getAttribute('expr_id');
+        let goal_id = goals[i].getAttribute('goal_id');
+        removeGoalCookie(expr_id, goal_id);
+        goals[i].parentNode.removeChild(goals[i]);
+      }
+    });
+
+    // Add click listeners for goal on click
     setOnclicks();
   }
 }
@@ -425,7 +475,6 @@ function add_goals(experiment, vwo_cookies){
     function(response){
       let data = JSON.parse(response);
       data = data._data;
-      console.log(data);
       let fired_goals = [];
       for(let i = 0; i < vwo_cookies.length; i++){
         if(vwo_cookies[i].name.indexOf(`_vis_opt_exp_${experiment.id}_goal`) > -1){
@@ -448,7 +497,6 @@ function add_goals(experiment, vwo_cookies){
 
 
 function create_fired_goals_elem(data, expr_name, expr_id){
-  console.log(data, expr_name);
   let goal = document.createElement('div');
     goal.className = `goal`;
     goal.setAttribute('expr_id', expr_id);
@@ -476,7 +524,6 @@ function create_fired_goals_elem(data, expr_name, expr_id){
     hiddenInfoElem.appendChild(urls);
   }
 
-  console.log(data.cssSelectors);
   if(data.cssSelectors !== undefined){
     let cssSelectors = document.createElement('div');
       cssSelectors.className = 'cssSelectors';
@@ -517,7 +564,6 @@ function setOnclicks(){
 function removeGoalCookie(expID, goalID){
     var cookieName = '_vis_opt_exp_' + expID + '_goal_' + goalID;
     var domain;
-    console.log(cookieName);
     chrome.cookies.getAll({
         "name": cookieName,
     }, function(cookies){
@@ -532,7 +578,6 @@ function removeGoalCookie(expID, goalID){
 }
 
 function prevDefault(){
-  console.log(CVPreventDefault);
   if(!CVPreventDefault){
       CVPreventDefault = true;
       chrome.runtime.getBackgroundPage(function(eventPage){

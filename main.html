@@ -35,7 +35,7 @@
       </p>
       <ul>
         <li>
-        Visit <a href="http://app.vwo.com/#/developers/tokens">
+        Visit <a class="dev-token" href="http://app.vwo.com/#/developers/tokens">
         http://app.vwo.com/#/developers/tokens</a>.
         </li>
         <li>Login to the account for which you want to create a token</li>
@@ -43,7 +43,11 @@
         <li>Insert a token name and as a permission select browse</li>
         <li>Press "Generate"</li>
         <li>Copy the token text and add it to the extension</li>
+        <li>Add a descriptive name to the token</li>
       </ul>
+      <p>You should now be able to see active experiments on pages that belong to
+        your account.
+      </p>
     </div>
     <div id=main-content>
       <div class="API-key">
@@ -56,8 +60,8 @@
         </div>
         <div class="add-new-key" style="display:none">
           <form>
-            <label>Add API key: </label>
-            <input class="add-api-key" type="text">
+            <input class="add-api-key" type="text" placeholder="token"><br>
+            <input class="api-key-name" type="text" placeholder="name"><br>
             <button class="add-api-key-btn">Add</button>
           </form>
         </div>
